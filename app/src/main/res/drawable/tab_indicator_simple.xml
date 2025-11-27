@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Transparent base -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent"/>
+        </shape>
+    </item>
+
+    <!-- Dot Indicator -->
+    <item
+        android:width="8dp"
+        android:height="8dp"
+        android:gravity="center">
+
+        <shape android:shape="oval">
+            <solid android:color="#2196F3"/>
+        </shape>
+
+    </item>
+
+</layer-list>

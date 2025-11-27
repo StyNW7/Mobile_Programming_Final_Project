@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/colorBackground"
+    tools:context="id.example.sehatin.activities.InfoRubrikActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rubrik Informasi Ibu &amp; Anak"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pilih topik untuk mendapatkan informasi singkat tentang kesehatan, nutrisi, dan pencegahan stunting."
+        android:textSize="16sp"
+        android:textColor="@color/colorTextPrimary"
+        android:layout_marginBottom="16dp"/>
+
+    <ListView
+        android:id="@+id/lv_rubrik_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/info_topics"/>
+
+</LinearLayout>
