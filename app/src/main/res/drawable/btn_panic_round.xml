@@ -1,5 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#D62828"/>
-    <corners android:radius="40dp"/>
-</shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ================= PRESSED ================= -->
+    <item android:state_pressed="true">
+        <layer-list>
+
+            <!-- Basic shadow -->
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="#8B0000"/>
+                    <corners android:radius="32dp"/>
+                </shape>
+            </item>
+
+            <!-- Inner layer -->
+            <item
+                android:top="10dp"
+                android:bottom="10dp"
+                android:left="10dp"
+                android:right="10dp">
+
+                <shape android:shape="rectangle">
+                    <gradient
+                        android:angle="270"
+                        android:startColor="#EF5350"
+                        android:endColor="#C62828"/>
+                    <corners android:radius="24dp"/>
+                </shape>
+            </item>
+
+        </layer-list>
+    </item>
+
+
+    <!-- ================= NORMAL ================= -->
+    <item>
+        <layer-list>
+
+            <!-- Shadow -->
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="#B71C1C"/>
+                    <corners android:radius="34dp"/>
+                </shape>
+            </item>
+
+            <!-- Main body -->
+            <item
+                android:top="12dp"
+                android:bottom="12dp"
+                android:left="12dp"
+                android:right="12dp">
+
+                <shape android:shape="rectangle">
+                    <gradient
+                        android:angle="270"
+                        android:startColor="#FF5252"
+                        android:endColor="#C62828"/>
+                    <corners android:radius="26dp"/>
+                </shape>
+
+            </item>
+
+        </layer-list>
+    </item>
+
+</selector>
