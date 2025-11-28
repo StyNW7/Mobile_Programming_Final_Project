@@ -1,6 +1,7 @@
 package id.example.sehatin.activities;
 
 import id.example.sehatin.R;
+import id.example.sehatin.firebase.DatabaseHelper;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,10 +11,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
+    DatabaseHelper helper;
+
     LinearLayout btnPanic, btnJadwal, btnInfo, btnRiwayat, btnChat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        helper = new DatabaseHelper();
+        // helper.seedDummyData();
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);

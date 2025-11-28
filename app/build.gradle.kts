@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     // It's good practice to also include the Kotlin plugin here
     // alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -53,11 +54,16 @@ dependencies {
     // implementation(libs.appcompat)
     // implementation(libs.material)
 
+    implementation("com.google.firebase:firebase-auth:22.1.1")
+    implementation("com.google.firebase:firebase-firestore:24.6.2")
+    implementation("androidx.recyclerview:recyclerview:1.3.0")
+
     // Your libraries
     implementation(libs.constraintlayout)
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("com.google.android.material:material:1.12.0")
+    implementation(libs.firebase.firestore)
 
     // Testing libraries
     testImplementation(libs.junit)
