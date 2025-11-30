@@ -22,6 +22,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activities.LoginActivity" />
+        <activity android:name=".activities.RegisterActivity" />
+
         <!-- MAIN FEATURES -->
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.EmergencyActivity" />

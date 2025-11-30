@@ -15,14 +15,16 @@
         android:padding="20dp">
 
         <!-- HERO IMAGE -->
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="295dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/rubrik_header"
-            android:layout_marginBottom="20dp"/>
 
         <!-- HEADER -->
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="20dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/rubrik_header" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

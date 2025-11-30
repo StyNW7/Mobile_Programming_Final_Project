@@ -17,8 +17,8 @@
         <!-- HEADER IMAGE -->
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:scaleType="centerCrop"
+            android:layout_height="200dp"
+            android:scaleType="fitCenter"
             android:layout_marginBottom="20dp"
             android:src="@drawable/riwayat_header"/>
 

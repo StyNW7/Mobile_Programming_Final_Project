@@ -78,30 +78,31 @@ public class MainActivity extends AppCompatActivity {
         }
         Button btnTes = findViewById(R.id.testButton); // Pastikan buat button dulu di XML atau panggil langsung tanpa tombol
 
+        // fixed userId
+        String userId = "user_tes_124";
         btnTes.setOnClickListener(v -> {
 
             // Hitung tanggal besok
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DAY_OF_YEAR, 1);
+//            cal.add(Calendar.DAY_OF_YEAR, 1);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            String tanggalBesok = sdf.format(cal.getTime());
+            String tglToday = sdf.format(cal.getTime());
 
             // Buat object dummy
 
-            String currUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//            String currUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
             VaccineSchedule dummyData = new VaccineSchedule(
                     null, // ID null biar digenerate otomatis
-                    currUserId,
-                    "childId",
-                    "Vaksin Campak (Tes)",
-                    tanggalBesok, // Masukkan tanggal besok agar Worker mendeteksi
-                    "2025-01-01",
+                    userId,
+                    "Budi123",
+                    "Vaksin Cacar (Tes)",
+                    tglToday, // Masukkan tanggal besok agar Worker mendeteksi
+                    "2025-11-30",
                     false,
                     null,
                     ""
             );
 
-            // Panggil fungsi simpan yang sudah diperbaiki di Langkah 1
             helper.addVaccineSchedule(dummyData, task -> {
                 if (task.isSuccessful()) {
                     Log.d("TEST_DATA", "Data dummy berhasil masuk!");
@@ -117,18 +118,18 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         WorkManager.getInstance(this).enqueue(testWork);
 
-        // testing db udh connect ke FE blm
+        // testing db udh connect ke app blm
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> tesData = new HashMap<>();
-        tesData.put("pesan", "Halo Firebase, apakah kita terhubung?");
+        tesData.put("pesan", "yo firebase ini testing 30/11/2025");
         tesData.put("waktu", FieldValue.serverTimestamp());
 
         db.collection("cek_koneksi")
                 .add(tesData)
                 .addOnSuccessListener(documentReference -> {
                     // SUKSES!
-                    Log.d("CEK_FIREBASE", "Mantap! Terhubung dengan ID: " + documentReference.getId());
+                    Log.d("CEK_FIREBASE", "Terhubung dengan ID: " + documentReference.getId());
                     Toast.makeText(this, "Firebase Terhubung!", Toast.LENGTH_LONG).show();
                 })
                 .addOnFailureListener(e -> {
