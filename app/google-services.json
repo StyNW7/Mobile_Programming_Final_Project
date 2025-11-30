@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1046335885246",
+    "firebase_url": "https://aol-mobprog-1234-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "aol-mobprog-1234",
+    "storage_bucket": "aol-mobprog-1234.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046335885246:android:d78960a6c0de42809d73ef",
+        "android_client_info": {
+          "package_name": "id.example.sehatin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVp8zLIWQA6o5_POOsAUErtWBqNgMtr0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

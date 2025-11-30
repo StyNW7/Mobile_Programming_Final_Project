@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="ContentDescription"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F4F9FF">
@@ -23,7 +26,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Beranda"
+                android:text="@string/beranda"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#0D47A1"/>
@@ -53,13 +56,13 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_warning"
-                android:tint="#FFFFFF"
+                app:tint="#FFFFFF"
                 android:layout_marginEnd="10dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PANGGIL BIDAN SEKARANG"
+                android:text="@string/panggil_bidan_sekarang"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:textSize="16sp"/>
@@ -93,7 +96,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Jadwal Imunisasi"
+                    android:text="@string/jadwal_imunisasi"
                     android:textStyle="bold"
                     android:textColor="#0D47A1"
                     android:layout_marginTop="8dp"/>
@@ -121,7 +124,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Info Kesehatan"
+                    android:text="@string/info_kesehatan"
                     android:textStyle="bold"
                     android:textColor="#0D47A1"
                     android:layout_marginTop="8dp"/>
@@ -149,7 +152,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Riwayat Anak"
+                    android:text="@string/riwayat_anak"
                     android:textStyle="bold"
                     android:textColor="#0D47A1"
                     android:layout_marginTop="8dp"/>
@@ -177,15 +180,32 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Chat Bidan"
+                    android:text="@string/chat_bidan"
                     android:textStyle="bold"
                     android:textColor="#0D47A1"
                     android:layout_marginTop="8dp"/>
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/btnTest"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_columnWeight="1">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Test"
+                    android:id="@+id/testButton"></Button>
+
+            </LinearLayout>
+
+
         </GridLayout>
 
     </LinearLayout>
+
 
 </ScrollView>

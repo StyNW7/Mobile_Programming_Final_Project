@@ -53,10 +53,11 @@ dependencies {
     // implementation(libs.core.ktx)
     // implementation(libs.appcompat)
     // implementation(libs.material)
-
+    implementation("androidx.work:work-runtime:2.8.1")
     implementation("com.google.firebase:firebase-auth:22.1.1")
     implementation("com.google.firebase:firebase-firestore:24.6.2")
     implementation("androidx.recyclerview:recyclerview:1.3.0")
+    implementation("com.google.guava:guava:31.1-android")
 
     // Your libraries
     implementation(libs.constraintlayout)

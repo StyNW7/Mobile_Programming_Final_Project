@@ -7,6 +7,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.*;
 import com.google.firebase.firestore.EventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import id.example.sehatin.models.*;
@@ -39,6 +40,17 @@ public class DatabaseHelper {
                 .set(user).addOnCompleteListener(onComplete);
     }
 
+    public void updateUserToken(String userId, String token) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("fcmToken", token); // Pastikan key string-nya sama dengan di User.java
+
+        db.collection("users")
+                .document(userId)
+                .update(updates)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Token updated"))
+                .addOnFailureListener(e -> Log.e(TAG, "Error updating token", e));
+    }
+
     public void addChild(Child child, OnCompleteListener<Void> onComplete) {
         if (child.id == null)
             child.id = db.collection(COLL_CHILDREN).document().getId();
@@ -51,6 +63,7 @@ public class DatabaseHelper {
             schedule.id = db.collection(COLL_VACCINE_SCHEDULES).document().getId();
         db.collection(COLL_VACCINE_SCHEDULES).document(schedule.id)
                 .set(schedule).addOnCompleteListener(onComplete);
+
     }
 
     public void addHealthRecord(ChildHealthRecord record, OnCompleteListener<Void> onComplete) {
@@ -185,7 +198,7 @@ public class DatabaseHelper {
     public void seedDummyData() {
 
         String userId = db.collection(COLL_USERS).document().getId();
-        User user = new User(userId, "Ayu Pratiwi", "ayu@example.com", "08123456789", "parent", "Serpong");
+        User user = new User(userId, "", "Ayu Pratiwi", "ayu@example.com", "08123456789", "parent", "Serpong");
 
         addUser(user, t -> Log.d(TAG, "Dummy user created"));
 
@@ -196,7 +209,7 @@ public class DatabaseHelper {
 
         addVaccineSchedule(
                 new VaccineSchedule(null, userId, childId, "BCG",
-                        "2024-03-10", "2024-03-08", false, null, ""),
+                        "2025-11-29", "2025-11-29", false, null, ""),
                 t -> Log.d(TAG, "Dummy schedule added")
         );
 
