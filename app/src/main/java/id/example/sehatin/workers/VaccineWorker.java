@@ -45,23 +45,33 @@ public class VaccineWorker extends Worker {
 //        }
 //
 //        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        String userId = "user_tes_123";
+        String userId = "user_tes_124";
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, 1); // Tambah 1 hari = Besok
+
+        // cek untuk hari ini (hari-h)
+        String todayDate = sdf.format(calendar.getTime());
+        checkAndNotify(userId, todayDate, "HARI INI!", "Segera kunjungi Puskesmas/Posyandu sekarang.");
+
+        // cek untuk besok
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
         String tomorrowDate = sdf.format(calendar.getTime());
+        checkAndNotify(userId, tomorrowDate, "BESOK!", "Siapkan berkas imunisasi untuk besok.");
 
-        Log.d("VaccineWorker", "Mencari jadwal untuk tanggal: " + tomorrowDate);
+        return Result.success();
+    }
 
+    private void checkAndNotify(String userId, String dateToCheck, String titleSuffix, String messageBody) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         try {
+            Log.d("VaccineWorker", "Cek jadwal tgl: " + dateToCheck);
+
             QuerySnapshot querySnapshot = Tasks.await(
                     db.collection("vaccineSchedules")
                             .whereEqualTo("userId", userId)
-                            .whereEqualTo("scheduledDate", tomorrowDate)
+                            .whereEqualTo("scheduledDate", dateToCheck) // Cek tanggal sesuai parameter
                             .whereEqualTo("isCompleted", false)
                             .get()
             );
@@ -70,20 +80,18 @@ public class VaccineWorker extends Worker {
                 List<DocumentSnapshot> documents = querySnapshot.getDocuments();
                 for (DocumentSnapshot doc : documents) {
                     String vaccineName = doc.getString("vaccineName");
-                    String childId = doc.getString("childId");
 
-                    showNotification("Jadwal Imunisasi Besok!", "Jangan lupa vaksin " + vaccineName + " untuk si Kecil.");
+                    // Munculkan notifikasi
+                    showNotification(
+                            "Jadwal Imunisasi " + titleSuffix,
+                            "Vaksin " + vaccineName + ". " + messageBody
+                    );
                 }
-            } else {
-                Log.d("VaccineWorker", "Tidak ada jadwal untuk besok.");
             }
 
         } catch (ExecutionException | InterruptedException e) {
-            Log.e("VaccineWorker", "Gagal ambil data", e);
-            return Result.retry();
+            Log.e("VaccineWorker", "Gagal ambil data tgl " + dateToCheck, e);
         }
-
-        return Result.success();
     }
 
     // helper utk munculin notif

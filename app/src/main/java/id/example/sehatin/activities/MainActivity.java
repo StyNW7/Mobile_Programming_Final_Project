@@ -79,14 +79,14 @@ public class MainActivity extends AppCompatActivity {
         Button btnTes = findViewById(R.id.testButton); // Pastikan buat button dulu di XML atau panggil langsung tanpa tombol
 
         // fixed userId
-        String userId = "user_tes_123";
+        String userId = "user_tes_124";
         btnTes.setOnClickListener(v -> {
 
             // Hitung tanggal besok
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DAY_OF_YEAR, 1);
+//            cal.add(Calendar.DAY_OF_YEAR, 1);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            String tanggalBesok = sdf.format(cal.getTime());
+            String tglToday = sdf.format(cal.getTime());
 
             // Buat object dummy
 
@@ -94,16 +94,15 @@ public class MainActivity extends AppCompatActivity {
             VaccineSchedule dummyData = new VaccineSchedule(
                     null, // ID null biar digenerate otomatis
                     userId,
-                    "Tono123",
-                    "Vaksin Campak (Tes)",
-                    tanggalBesok, // Masukkan tanggal besok agar Worker mendeteksi
+                    "Budi123",
+                    "Vaksin Cacar (Tes)",
+                    tglToday, // Masukkan tanggal besok agar Worker mendeteksi
                     "2025-11-30",
                     false,
                     null,
                     ""
             );
 
-            // Panggil fungsi simpan yang sudah diperbaiki di Langkah 1
             helper.addVaccineSchedule(dummyData, task -> {
                 if (task.isSuccessful()) {
                     Log.d("TEST_DATA", "Data dummy berhasil masuk!");
@@ -119,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         WorkManager.getInstance(this).enqueue(testWork);
 
-        // testing db udh connect ke FE blm
+        // testing db udh connect ke app blm
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> tesData = new HashMap<>();
