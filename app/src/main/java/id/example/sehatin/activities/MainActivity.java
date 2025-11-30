@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
         }
         Button btnTes = findViewById(R.id.testButton); // Pastikan buat button dulu di XML atau panggil langsung tanpa tombol
 
+        // fixed userId
+        String userId = "user_tes_123";
         btnTes.setOnClickListener(v -> {
 
             // Hitung tanggal besok
@@ -88,14 +90,14 @@ public class MainActivity extends AppCompatActivity {
 
             // Buat object dummy
 
-            String currUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//            String currUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
             VaccineSchedule dummyData = new VaccineSchedule(
                     null, // ID null biar digenerate otomatis
-                    currUserId,
-                    "childId",
+                    userId,
+                    "Tono123",
                     "Vaksin Campak (Tes)",
                     tanggalBesok, // Masukkan tanggal besok agar Worker mendeteksi
-                    "2025-01-01",
+                    "2025-11-30",
                     false,
                     null,
                     ""
@@ -121,14 +123,14 @@ public class MainActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> tesData = new HashMap<>();
-        tesData.put("pesan", "Halo Firebase, apakah kita terhubung?");
+        tesData.put("pesan", "yo firebase ini testing 30/11/2025");
         tesData.put("waktu", FieldValue.serverTimestamp());
 
         db.collection("cek_koneksi")
                 .add(tesData)
                 .addOnSuccessListener(documentReference -> {
                     // SUKSES!
-                    Log.d("CEK_FIREBASE", "Mantap! Terhubung dengan ID: " + documentReference.getId());
+                    Log.d("CEK_FIREBASE", "Terhubung dengan ID: " + documentReference.getId());
                     Toast.makeText(this, "Firebase Terhubung!", Toast.LENGTH_LONG).show();
                 })
                 .addOnFailureListener(e -> {

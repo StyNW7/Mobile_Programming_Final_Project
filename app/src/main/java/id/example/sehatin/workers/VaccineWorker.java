@@ -37,15 +37,15 @@ public class VaccineWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        // Logika ini berjalan di background thread
         Log.d("VaccineWorker", "Sedang mengecek jadwal imunisasi...");
 
-        // cek apakah user sudah login
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            return Result.success(); // kl ga ada user, stop kerja.
-        }
-
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        // cek apakah user sudah login -> kl udah ada logic login baru uncomment ini
+//        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+//            return Result.success(); // kl ga ada user, stop kerja.
+//        }
+//
+//        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String userId = "user_tes_123";
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
