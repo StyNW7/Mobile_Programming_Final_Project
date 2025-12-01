@@ -3,6 +3,7 @@ plugins {
     // It's good practice to also include the Kotlin plugin here
     // alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
+
 }
 
 android {

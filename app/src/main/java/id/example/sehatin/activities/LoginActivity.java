@@ -29,6 +29,8 @@ public class LoginActivity extends AppCompatActivity {
 
             String email = binding.etEmail.getText().toString().trim();
             String password = binding.etPassword.getText().toString().trim();
+            System.out.println(email);
+            System.out.println(password);
 
             // Field empty check
             if (email.isEmpty() || password.isEmpty()) {
