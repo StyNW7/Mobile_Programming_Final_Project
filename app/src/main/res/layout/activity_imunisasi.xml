@@ -105,7 +105,7 @@
                 android:id="@+id/tv_umur_anak"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="👶 Umur: -"
+                android:text="👶 Umur: - "
                 android:padding="10dp"
                 android:background="@drawable/chip_bg"
                 android:layout_marginEnd="8dp"/>
@@ -114,7 +114,7 @@
                 android:id="@+id/tv_total_vaksin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="💉 Vaksin: -"
+                android:text="💉 Vaksin: - "
                 android:padding="10dp"
                 android:background="@drawable/chip_bg"/>
         </LinearLayout>
@@ -158,12 +158,10 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp">
 
-            <ListView
-                android:id="@+id/lv_jadwal_imunisasi"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_jadwal_imunisasi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:divider="@android:color/transparent"
-                android:dividerHeight="8dp"
                 android:padding="12dp"/>
 
         </androidx.cardview.widget.CardView>
