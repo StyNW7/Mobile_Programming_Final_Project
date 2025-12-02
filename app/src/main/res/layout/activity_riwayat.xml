@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    tools:context="id.example.sehatin.activities.RiwayatActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- HEADER IMAGE -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="fitCenter"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/riwayat_header"/>
+
+        <!-- TITLE -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Catatan Riwayat Kesehatan Anak"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_marginBottom="6dp"/>
+
+        <!-- CHILD INFO -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="👶 Budi Santoso • 1 Tahun"
+            android:textSize="16sp"
+            android:textColor="@color/colorTextPrimary"
+            android:layout_marginBottom="20dp"/>
+
+
+        <!-- INPUT CARD -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="6dp"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:orientation="vertical">
+
+
+                <!-- Berat -->
+                <EditText
+                    android:id="@+id/et_berat_badan"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="Berat Badan (kg)"
+                    android:inputType="numberDecimal"
+                    android:drawableStart="@android:drawable/ic_menu_edit"
+                    android:drawablePadding="8dp"
+                    android:padding="12dp"
+                    android:background="@android:drawable/edit_text"
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- Tinggi -->
+                <EditText
+                    android:id="@+id/et_tinggi_badan"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="Tinggi Badan (cm)"
+                    android:inputType="numberDecimal"
+                    android:drawableStart="@android:drawable/ic_menu_sort_by_size"
+                    android:drawablePadding="8dp"
+                    android:padding="12dp"
+                    android:background="@android:drawable/edit_text"
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- Catatan -->
+                <EditText
+                    android:id="@+id/et_catatan"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:hint="Catatan dokter / kunjungan..."
+                    android:gravity="top"
+                    android:padding="12dp"
+                    android:background="@android:drawable/edit_text"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- BUTTON -->
+                <Button
+                    android:id="@+id/btn_simpan_riwayat"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="Simpan Catatan"
+                    android:textStyle="bold"
+                    android:background="@drawable/rounded_button"
+                    android:textColor="@android:color/white"
+                    android:letterSpacing="0.04"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="4dp"/>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <!-- HISTORY TITLE -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Riwayat Sebelumnya"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- EMPTY STATE / LIST AREA -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Belum ada riwayat tersimpan."
+                android:padding="16dp"
+                android:textColor="@color/colorTextSecondary"
+                android:gravity="center"/>
+
+        </androidx.cardview.widget.CardView>
+
+
+    </LinearLayout>
+
+</ScrollView>

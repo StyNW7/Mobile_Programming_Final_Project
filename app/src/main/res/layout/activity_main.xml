@@ -1,19 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="#F4F9FF"
+    tools:ignore="ContentDescription"
+    android:fillViewport="true">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        android:padding="20dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- ================= HEADER ================= -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:text="Beranda"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#0D47A1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <!-- PROFILE BUTTON (kanan atas) -->
+            <ImageView
+                android:id="@+id/btnProfile"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_profile"
+                android:background="@drawable/bg_profile_round"
+                android:padding="6dp" />
+        </LinearLayout>
+
+        <!-- SPACING -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp"/>
+
+        <!-- ================= PANIC SECTION ================= -->
+        <LinearLayout
+            android:id="@+id/btnPanic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:background="@drawable/bg_panic_card"
+            android:elevation="4dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <!-- PANIC TITLE -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_warning"
+                    android:layout_marginEnd="12dp" />
+
+                <TextView
+                    android:text="Telepon Darurat"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <!-- SPACING -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <!-- ================= MENU GRID ================= -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2">
+
+            <!-- ================= CARD: JADWAL ================= -->
+            <LinearLayout
+                android:id="@+id/btnJadwal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="18dp"
+                android:elevation="3dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:src="@drawable/ic_calendar"/>
+
+                <TextView
+                    android:text="Jadwal Imunisasi"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#0D47A1"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- ================= CARD: INFO ================= -->
+            <LinearLayout
+                android:id="@+id/btnInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="18dp"
+                android:elevation="3dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:src="@drawable/ic_info"/>
+
+                <TextView
+                    android:text="Info Kesehatan"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:textColor="#0D47A1"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- ================= CARD: RIWAYAT ================= -->
+            <LinearLayout
+                android:id="@+id/btnRiwayat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="18dp"
+                android:elevation="3dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:src="@drawable/ic_history"/>
+
+                <TextView
+                    android:text="Riwayat Anak"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#0D47A1"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- ================= CARD: CHAT ================= -->
+            <LinearLayout
+                android:id="@+id/btnChat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="18dp"
+                android:elevation="3dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:src="@drawable/ic_chat"/>
+
+                <TextView
+                    android:text="Chat Bidan"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#0D47A1"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+        </GridLayout>
+
+        <Button
+            android:id="@+id/testButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TEST WORKER"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:backgroundTint="#1565C0"
+            android:background="@drawable/rounded_button"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+</ScrollView>

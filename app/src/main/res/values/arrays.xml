@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="info_topics">
+        <item>Pentingnya ASI Eksklusif</item>
+        <item>Tanda-tanda Stunting pada Anak</item>
+        <item>Nutrisi Ibu Hamil</item>
+        <item>Penanganan Demam pada Balita</item>
+        <item>Jadwal Posyandu Bulanan</item>
+        <item>Pertumbuhan Gigi Anak</item>
+    </string-array>
+</resources>

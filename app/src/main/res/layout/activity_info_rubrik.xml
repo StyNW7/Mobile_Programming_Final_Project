@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    tools:context="id.example.sehatin.activities.InfoRubrikActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- HERO IMAGE -->
+
+        <!-- HEADER -->
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="20dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/rubrik_header" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rubrik Informasi"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_marginBottom="6dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Informasi penting seputar kesehatan ibu &amp; anak, nutrisi, dan pencegahan stunting."
+            android:textSize="15sp"
+            android:lineSpacingExtra="3dp"
+            android:textColor="@color/colorTextPrimary"
+            android:layout_marginBottom="20dp"/>
+
+
+        <!-- INFO CHIPS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🍼 Bayi"
+                android:padding="10dp"
+                android:background="@drawable/chip_bg"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🤰 Ibu Hamil"
+                android:padding="10dp"
+                android:background="@drawable/chip_bg"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🥗 Nutrisi"
+                android:padding="10dp"
+                android:background="@drawable/chip_bg"/>
+        </LinearLayout>
+
+
+        <!-- CARD LIST -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Topik Edukasi"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_marginBottom="8dp"/>
+
+                <ListView
+                    android:id="@+id/lv_rubrik_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="8dp"
+                    android:entries="@array/info_topics"/>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+</ScrollView>

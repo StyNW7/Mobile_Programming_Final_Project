@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="#F5F5F5"
+    android:padding="28dp"
+    tools:context=".activities.EmergencyActivity">
+
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_logo_sehatin"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="@string/app_name" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Panggilan Bantuan Darurat"
+        android:textStyle="bold"
+        android:textSize="26sp"
+        android:textColor="#333333"
+        android:layout_marginBottom="12dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tekan dan tahan tombol di bawah selama 3 detik untuk menghubungi petugas medis."
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:textColor="#757575"
+        android:layout_marginBottom="35dp"/>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:cardCornerRadius="100dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="#FFFFFF"
+        android:layout_gravity="center"
+        android:layout_marginBottom="36dp">
+
+        <ImageButton
+            android:id="@+id/btn_call_emergency"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/selector_btn_emergency_red"
+            android:src="@drawable/ic_warning"
+            android:scaleType="centerInside"
+            android:padding="50dp"
+            android:elevation="0dp"
+            android:contentDescription="Tombol Panggilan Darurat" />
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tvHoldHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tahan selama 3 detik..."
+        android:textSize="16sp"
+        android:textColor="#757575"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lepaskan sentuhan untuk membatalkan."
+        android:textSize="12sp"
+        android:textColor="#BDBDBD"/>
+
+</LinearLayout>
