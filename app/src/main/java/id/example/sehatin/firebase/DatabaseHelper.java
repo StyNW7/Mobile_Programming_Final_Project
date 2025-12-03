@@ -91,6 +91,14 @@ public class DatabaseHelper {
     // --------------------------------------------------
     // READ / QUERY
     // --------------------------------------------------
+
+    // Example method to get a single User by ID
+    public void getUser(String userId, OnCompleteListener<DocumentSnapshot> onComplete) {
+        db.collection(COLL_USERS)
+                .document(userId)
+                .get()
+                .addOnCompleteListener(onComplete);
+    }
     public void getChildrenForUser(String userId, OnCompleteListener<QuerySnapshot> onComplete) {
         db.collection(COLL_CHILDREN)
                 .whereEqualTo("userId", userId)
@@ -197,77 +205,77 @@ public class DatabaseHelper {
     // --------------------------------------------------
     public void seedDummyData() {
 
-        String userId = db.collection(COLL_USERS).document().getId();
-        User user = new User(userId, "", "Ayu Pratiwi", "ayu@example.com", "08123456789", "parent", "Serpong");
-
-        addUser(user, t -> Log.d(TAG, "Dummy user created"));
-
-        String childId = db.collection(COLL_CHILDREN).document().getId();
-        Child child = new Child(childId, userId, "Bayi A", "2024-03-10", "female", 3.2, 49.0);
-
-        addChild(child, t -> Log.d(TAG, "Dummy child created"));
-
-        addVaccineSchedule(
-                new VaccineSchedule(null, userId, childId, "BCG",
-                        "2025-11-29", "2025-11-29", false, null, ""),
-                t -> Log.d(TAG, "Dummy schedule added")
-        );
-
-        addHealthRecord(
-                new ChildHealthRecord(null, childId, "2024-04-10",
-                        3.4, 50.0, null, "Normal growth", ""),
-                t -> Log.d(TAG, "Dummy health record added")
-        );
-
-        addEmergencyContact(
-                new EmergencyContact(
-                        null, userId, "RS Hermina", "Hospital",
-                        "021777888", "24 Hours"
-                ),
-                t -> Log.d(TAG, "Dummy emergency added")
-        );
-
-        addHealthArticle(
-                new HealthArticle(
-                        null,
-                        "5 Cara Menjaga Kesehatan Anak di Usia Dini",
-                        "Menjaga kesehatan anak adalah prioritas setiap orang tua. "
-                                + "Pada usia dini, anak sangat rentan terhadap penyakit karena sistem imun mereka "
-                                + "belum berkembang sempurna. Berikut adalah lima langkah mudah yang dapat dilakukan "
-                                + "orang tua untuk memastikan anak tetap sehat setiap hari:\n\n"
-
-                                + "1. **Vaksinasi Tepat Waktu**\n"
-                                + "   Vaksinasi adalah perlindungan pertama untuk mencegah penyakit berbahaya seperti "
-                                + "   polio, campak, dan hepatitis B. Pastikan jadwal imunisasi anak tidak terlewat.\n\n"
-
-                                + "2. **Pola Makan Seimbang**\n"
-                                + "   Berikan makanan kaya nutrisi seperti sayur, buah, protein, dan susu. "
-                                + "   Hindari jajanan tinggi gula dan makanan cepat saji agar imunitas anak tetap kuat.\n\n"
-
-                                + "3. **Cukup Tidur**\n"
-                                + "   Anak membutuhkan 10–13 jam tidur sehari untuk mendukung pertumbuhan otak "
-                                + "   dan tubuh. Buat rutinitas tidur yang konsisten.\n\n"
-
-                                + "4. **Kebersihan Diri**\n"
-                                + "   Ajarkan anak mencuci tangan sebelum makan, setelah bermain, dan setelah dari toilet. "
-                                + "   Kebiasaan ini mencegah infeksi bakteri dan virus.\n\n"
-
-                                + "5. **Aktivitas Fisik**\n"
-                                + "   Ajak anak bermain di luar rumah setidaknya 1 jam sehari. Aktivitas fisik membantu "
-                                + "   perkembangan motorik serta membangun kekuatan tulang dan otot.\n\n"
-
-                                + "Kesehatan anak bukan hanya tanggung jawab dokter, tetapi juga peran penting orang tua "
-                                + "dalam membentuk kebiasaan sehat sejak dini.",
-
-                        "Parenting",
-                        "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800",
-                        java.time.LocalDate.now().toString(),
-                        "Dr. Maya Putri, Sp.A"
-                ),
-                t -> Log.d(TAG, "Dummy health article added")
-        );
-
-    }
+//        String userId = db.collection(COLL_USERS).document().getId();
+//        User user = new User(userId, "", "Ayu Pratiwi", "ayu@example.com", "08123456789", "parent", "Serpong");
+//
+//        addUser(user, t -> Log.d(TAG, "Dummy user created"));
+//
+//        String childId = db.collection(COLL_CHILDREN).document().getId();
+//        Child child = new Child(childId, userId, "Bayi A", "2024-03-10", "female", 3.2, 49.0);
+//
+//        addChild(child, t -> Log.d(TAG, "Dummy child created"));
+//
+//        addVaccineSchedule(
+//                new VaccineSchedule(null, userId, childId, "BCG",
+//                        "2025-11-29", "2025-11-29", false, null, ""),
+//                t -> Log.d(TAG, "Dummy schedule added")
+//        );
+//
+//        addHealthRecord(
+//                new ChildHealthRecord(null, childId, "2024-04-10",
+//                        3.4, 50.0, null, "Normal growth", ""),
+//                t -> Log.d(TAG, "Dummy health record added")
+//        );
+//
+//        addEmergencyContact(
+//                new EmergencyContact(
+//                        null, userId, "RS Hermina", "Hospital",
+//                        "021777888", "24 Hours"
+//                ),
+//                t -> Log.d(TAG, "Dummy emergency added")
+//        );
+//
+//        addHealthArticle(
+//                new HealthArticle(
+//                        null,
+//                        "5 Cara Menjaga Kesehatan Anak di Usia Dini",
+//                        "Menjaga kesehatan anak adalah prioritas setiap orang tua. "
+//                                + "Pada usia dini, anak sangat rentan terhadap penyakit karena sistem imun mereka "
+//                                + "belum berkembang sempurna. Berikut adalah lima langkah mudah yang dapat dilakukan "
+//                                + "orang tua untuk memastikan anak tetap sehat setiap hari:\n\n"
+//
+//                                + "1. **Vaksinasi Tepat Waktu**\n"
+//                                + "   Vaksinasi adalah perlindungan pertama untuk mencegah penyakit berbahaya seperti "
+//                                + "   polio, campak, dan hepatitis B. Pastikan jadwal imunisasi anak tidak terlewat.\n\n"
+//
+//                                + "2. **Pola Makan Seimbang**\n"
+//                                + "   Berikan makanan kaya nutrisi seperti sayur, buah, protein, dan susu. "
+//                                + "   Hindari jajanan tinggi gula dan makanan cepat saji agar imunitas anak tetap kuat.\n\n"
+//
+//                                + "3. **Cukup Tidur**\n"
+//                                + "   Anak membutuhkan 10–13 jam tidur sehari untuk mendukung pertumbuhan otak "
+//                                + "   dan tubuh. Buat rutinitas tidur yang konsisten.\n\n"
+//
+//                                + "4. **Kebersihan Diri**\n"
+//                                + "   Ajarkan anak mencuci tangan sebelum makan, setelah bermain, dan setelah dari toilet. "
+//                                + "   Kebiasaan ini mencegah infeksi bakteri dan virus.\n\n"
+//
+//                                + "5. **Aktivitas Fisik**\n"
+//                                + "   Ajak anak bermain di luar rumah setidaknya 1 jam sehari. Aktivitas fisik membantu "
+//                                + "   perkembangan motorik serta membangun kekuatan tulang dan otot.\n\n"
+//
+//                                + "Kesehatan anak bukan hanya tanggung jawab dokter, tetapi juga peran penting orang tua "
+//                                + "dalam membentuk kebiasaan sehat sejak dini.",
+//
+//                        "Parenting",
+//                        "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800",
+//                        java.time.LocalDate.now().toString(),
+//                        "Dr. Maya Putri, Sp.A"
+//                ),
+//                t -> Log.d(TAG, "Dummy health article added")
+//        );
+//
+      }
 
     // Additional access if needed
     public FirebaseFirestore getFirestore() {
