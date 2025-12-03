@@ -31,7 +31,7 @@ public class EmergencyActivity extends AppCompatActivity {
     DocumentReference docRef = db.collection("emergencyContacts").document("0kS7VWGPf0DDpOOpgfzH");
 
     private static final int REQUEST_CALL_PHONE = 1;
-    private String emergencyNumber = "118"; // Default emergency number
+    private String emergencyNumber = "911"; // Default emergency number
 
     private ActivityEmergencyBinding binding;
     private Handler handler = new Handler();
