@@ -151,6 +151,164 @@ public class DatabaseHelper {
                 t -> Log.d(TAG, "Dummy health article added")
         );
 
+        // Add after your first article
+        addHealthArticle(
+                new HealthArticle(
+                        null,
+                        "Panduan Lengkap Imunisasi Anak 0-24 Bulan",
+                        "Imunisasi adalah investasi kesehatan terbaik untuk anak. Berikut panduan lengkap imunisasi dari lahir hingga 2 tahun:\n\n" +
+
+                                "**0 Bulan (Saat Lahir):**\n" +
+                                "• Hepatitis B-0: Mencegah hepatitis B\n" +
+                                "• Polio-0: Mencegah polio\n\n" +
+
+                                "**1 Bulan:**\n" +
+                                "• BCG: Mencegah TBC\n" +
+                                "• Hepatitis B-1\n\n" +
+
+                                "**2 Bulan:**\n" +
+                                "• DPT-HB-Hib 1: Mencegah difteri, pertusis, tetanus, hepatitis B, dan HiB\n" +
+                                "• Polio 1\n" +
+                                "• Rotavirus 1 (opsional)\n\n" +
+
+                                "**3 Bulan:**\n" +
+                                "• DPT-HB-Hib 2\n" +
+                                "• Polio 2\n\n" +
+
+                                "**4 Bulan:**\n" +
+                                "• DPT-HB-Hib 3\n" +
+                                "• Polio 3\n" +
+                                "• Rotavirus 2 (opsional)\n\n" +
+
+                                "**9 Bulan:**\n" +
+                                "• Campak/MR: Mencegah campak dan rubella\n\n" +
+
+                                "**12 Bulan:**\n" +
+                                "• PCV 4: Mencegah pneumonia\n" +
+                                "• JE (di daerah endemis)\n\n" +
+
+                                "**18-24 Bulan:**\n" +
+                                "• DPT-HB-Hib 4\n" +
+                                "• Campak/MR 2\n\n" +
+
+                                "**Catatan Penting:**\n" +
+                                "• Bawa buku KIA ke setiap kunjungan\n" +
+                                "• Jangan tunda jadwal imunisasi\n" +
+                                "• Pantau reaksi pasca imunisasi\n" +
+                                "• Konsultasi dokter jika anak sakit saat jadwal imunisasi",
+
+                        "Imunisasi",
+                        "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800",
+                        java.time.LocalDate.now().minusDays(1).toString(),
+                        "Dr. Ahmad Fauzi, Sp.A"
+                ),
+                t -> Log.d(TAG, "Dummy article 2 added")
+        );
+
+        addHealthArticle(
+                new HealthArticle(
+                        null,
+                        "Makanan Pendamping ASI (MPASI) yang Tepat untuk Bayi 6-12 Bulan",
+                        "MPASI mulai diberikan saat bayi berusia 6 bulan. Berikut panduan lengkap MPASI:\n\n" +
+
+                                "**Prinsip MPASI:**\n" +
+                                "1. **Tepat Waktu:** Mulai usia 6 bulan\n" +
+                                "2. **Adekuat:** Cukup energi, protein, dan mikronutrien\n" +
+                                "3. **Aman:** Higienis dan bebas kontaminasi\n" +
+                                "4. **Diberikan dengan cara yang benar:** Responsif feeding\n\n" +
+
+                                "**Tekstur MPASI Berdasarkan Usia:**\n" +
+                                "• **6-8 bulan:** Bubur halus/saring\n" +
+                                "• **9-11 bulan:** Makanan lumat/lembut\n" +
+                                "• **12-24 bulan:** Makanan keluarga\n\n" +
+
+                                "**Menu Harian Contoh (8 bulan):**\n" +
+                                "• **Pagi:** Bubur beras + hati ayam + wortel\n" +
+                                "• **Siang:** Puree kentang + ikan + bayam\n" +
+                                "• **Sore:** Bubur buah pisang + alpukat\n" +
+                                "• **Makan selingan:** Yoghurt atau buah\n\n" +
+
+                                "**Makanan yang Harus Dihindari:**\n" +
+                                "• Madu (risiko botulisme)\n" +
+                                "• Garam dan gula berlebihan\n" +
+                                "• Makanan keras yang bisa menyebabkan tersedak\n" +
+                                "• Makanan instan/cepat saji\n\n" +
+
+                                "**Tips Sukses MPASI:**\n" +
+                                "• Buat jadwal makan teratur\n" +
+                                "• Variasikan menu setiap hari\n" +
+                                "• Perkenalkan satu per satu jenis makanan\n" +
+                                "• Sabar saat bayi menolak makanan baru\n" +
+                                "• Jangan memaksa bayi makan",
+
+                        "Nutrisi",
+                        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800",
+                        java.time.LocalDate.now().minusDays(2).toString(),
+                        "Dr. Sari Indah, Sp.GK"
+                ),
+                t -> Log.d(TAG, "Dummy article 3 added")
+        );
+
+        addHealthArticle(
+                new HealthArticle(
+                        null,
+                        "Cegah Stunting Sejak Dini: Panduan untuk Orang Tua",
+                        "Stunting adalah kondisi gagal tumbuh pada anak akibat kekurangan gizi kronis. Berikut cara mencegahnya:\n\n" +
+
+                                "**Tanda-tanda Stunting:**\n" +
+                                "• Tinggi badan di bawah standar\n" +
+                                "• Perkembangan motorik terlambat\n" +
+                                "• Mudah sakit\n" +
+                                "• Performa kognitif kurang optimal\n\n" +
+
+                                "**Penyebab Stunting:**\n" +
+                                "1. **Faktor Ibu:**\n" +
+                                "   - Kekurangan gizi selama hamil\n" +
+                                "   - Usia terlalu muda atau tua saat hamil\n" +
+                                "   - Penyakit kronis\n" +
+                                "   - Jarak kehamilan terlalu dekat\n\n" +
+
+                                "2. **Faktor Bayi:**\n" +
+                                "   - Tidak mendapat ASI eksklusif\n" +
+                                "   - MPASI tidak tepat\n" +
+                                "   - Infeksi berulang\n" +
+                                "   - Lingkungan tidak bersih\n\n" +
+
+                                "**Langkah Pencegahan:**\n" +
+                                "**Sebelum Hamil:**\n" +
+                                "• Konsumsi makanan bergizi\n" +
+                                "• Konsumsi asam folat\n" +
+                                "• Periksa kesehatan secara rutin\n\n" +
+
+                                "**Selama Hamil:**\n" +
+                                "• Kontrol kehamilan minimal 4 kali\n" +
+                                "• Konsumsi tablet tambah darah\n" +
+                                "• Makan makanan bergizi seimbang\n" +
+                                "• Istirahat cukup\n\n" +
+
+                                "**Setelah Lahir:**\n" +
+                                "• Beri ASI eksklusif 6 bulan\n" +
+                                "• MPASI tepat waktu dan bergizi\n" +
+                                "• Imunisasi lengkap\n" +
+                                "• Pantau tumbuh kembang di posyandu\n" +
+                                "• Jaga kebersihan lingkungan\n\n" +
+
+                                "**Peran Posyandu:**\n" +
+                                "• Pemantauan berat dan tinggi badan bulanan\n" +
+                                "• Edukasi gizi\n" +
+                                "• Distribusi vitamin A\n" +
+                                "• Imunisasi\n\n" +
+
+                                "Stunting dapat dicegah dengan intervensi yang tepat sejak dini!",
+
+                        "Stunting",
+                        "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=800",
+                        java.time.LocalDate.now().minusDays(3).toString(),
+                        "Dr. Bambang Wijaya, Sp.A(K)"
+                ),
+                t -> Log.d(TAG, "Dummy article 4 added")
+        );
+
 }
 
     // Additional access if needed

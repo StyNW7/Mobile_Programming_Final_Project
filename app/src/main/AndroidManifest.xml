@@ -13,26 +13,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-
-        <activity android:name=".LandingActivity"
+        <activity
+            android:name=".activities.DetailArticleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.DetailArtikelJava"
+            android:exported="false" />
+        <activity
+            android:name=".LandingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".activities.LoginActivity" />
-        <activity android:name=".activities.RegisterActivity" />
-
-        <!-- MAIN FEATURES -->
+        <activity android:name=".activities.RegisterActivity" /> <!-- MAIN FEATURES -->
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.EmergencyActivity" />
         <activity android:name=".activities.ImunisasiActivity" />
         <activity android:name=".activities.InfoRubrikActivity" />
         <activity android:name=".activities.RiwayatActivity" />
-
     </application>
-
 
 </manifest>

@@ -1,6 +1,8 @@
 package id.example.sehatin.models;
 
-public class HealthArticle {
+import java.io.Serializable;
+
+public class HealthArticle implements Serializable {
     public String id;
     public String title;
     public String content;
