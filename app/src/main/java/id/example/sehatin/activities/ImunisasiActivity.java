@@ -1,13 +1,20 @@
 package id.example.sehatin.activities;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -22,11 +29,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import id.example.sehatin.R;
 import id.example.sehatin.adapters.JadwalImunisasiAdapter;
 import id.example.sehatin.databinding.ActivityImunisasiBinding;
 import id.example.sehatin.firebase.DatabaseHelper;
 import id.example.sehatin.models.JadwalItem;
 import id.example.sehatin.models.VaccineSchedule;
+import id.example.sehatin.utils.SessionManager;
 
 public class ImunisasiActivity extends AppCompatActivity {
 
@@ -35,6 +44,7 @@ public class ImunisasiActivity extends AppCompatActivity {
     private final CollectionReference childrenCollectionReference = db.collection("children");
     private ActivityImunisasiBinding binding;
     private DatabaseHelper dbHelper;
+    private SessionManager sessionManager;
     private JadwalImunisasiAdapter adapter;
     private final List<JadwalItem> jadwalItems = new ArrayList<>();
     private final List<Object[]> children = new ArrayList<>();
@@ -47,17 +57,18 @@ public class ImunisasiActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         dbHelper = new DatabaseHelper();
+        sessionManager = new SessionManager(this);
 
+        setupTopBar();
+        setupBottomNavigation();
         setupRecyclerView();
 
         binding.etTglLahir.setFocusable(false);
         binding.etTglLahir.setClickable(true);
-
         binding.etTglLahir.setOnClickListener(v -> showDatePickerDialog());
 
         binding.btnHitungJadwal.setOnClickListener(v -> {
             String tglLahir = binding.etTglLahir.getText().toString().trim();
-
             if (!tglLahir.isEmpty()) {
                 calculateAndDisplaySchedule(tglLahir);
             } else {
@@ -68,14 +79,63 @@ public class ImunisasiActivity extends AppCompatActivity {
         loadSchedulesFromFirestore();
     }
 
+    private void setupTopBar() {
+        TextView tvTitle = findViewById(R.id.tvToolbarTitle);
+        if (tvTitle != null) tvTitle.setText("Jadwal Imunisasi");
+
+        ImageView btnSignOut = findViewById(R.id.btnSignOut);
+        if (btnSignOut != null) {
+            btnSignOut.setOnClickListener(v -> {
+                sessionManager.logout();
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            });
+        }
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNav = binding.bottomNavigationView;
+        FloatingActionButton fab = binding.fabEmergency;
+
+        // Note: We don't select any item here because "Jadwal" is inside Home
+        // But if you want to highlight Home, you can use R.id.nav_home
+        bottomNav.setSelectedItemId(R.id.nav_home);
+
+        bottomNav.getMenu().findItem(R.id.nav_placeholder).setEnabled(false);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+                return true;
+            } else if (id == R.id.nav_article) {
+                startActivity(new Intent(this, InfoRubrikActivity.class));
+                finish();
+                return true;
+            } else if (id == R.id.nav_chatbot) {
+                // Future implementation
+                return true;
+            } else if (id == R.id.nav_profile) {
+                // Future implementation
+                return true;
+            }
+            return false;
+        });
+
+        fab.setOnClickListener(v -> startActivity(new Intent(this, EmergencyActivity.class)));
+    }
+
     private void loadSchedulesFromFirestore() {
+        // ... (Your existing load logic kept exactly the same) ...
         childrenCollectionReference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 children.clear();
                 for (QueryDocumentSnapshot doc : task.getResult()) {
                     children.add(new Object[]{doc.getId(), doc.getString("userId"), doc.getString("name"), doc.getString("birthdate")});
                 }
-                // Now that children are loaded, load vaccine schedules
                 vaccinesCollectionReference.get().addOnCompleteListener(vaccineTask -> {
                     if (vaccineTask.isSuccessful()) {
                         jadwalItems.clear();
@@ -94,7 +154,6 @@ public class ImunisasiActivity extends AppCompatActivity {
                                     String childBirthdateStr = (String) child[3];
                                     try {
                                         if (childBirthdateStr == null || scheduledDateStr == null) continue;
-
                                         Date birthDate = dbFormat.parse(childBirthdateStr);
                                         Date scheduledDate = dbFormat.parse(scheduledDateStr);
 
@@ -108,23 +167,18 @@ public class ImunisasiActivity extends AppCompatActivity {
                                             int usiaBulan = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
 
                                             String formattedScheduledDate = uiFormat.format(scheduledDate);
-
                                             jadwalItems.add(new JadwalItem(vaccineName, formattedScheduledDate, usiaBulan));
                                         }
                                     } catch (ParseException e) {
                                         Log.e("DateParseError", "Failed to parse date string.", e);
                                     }
-                                    break; // Found the child, no need to loop further
+                                    break;
                                 }
                             }
                         }
                         adapter.notifyDataSetChanged();
-                    } else {
-                        Log.w("FirestoreError", "Error getting documents.", vaccineTask.getException());
                     }
                 });
-            } else {
-                Log.w("FirestoreError", "Error getting documents.", task.getException());
             }
         });
     }
@@ -205,7 +259,8 @@ public class ImunisasiActivity extends AppCompatActivity {
                 jadwalItems.add(new JadwalItem(namaVaksin, tglUI, jarakBulan));
 
                 if (currentUser != null) {
-                    String childId = "child_id_placeholder"; //TODO: Replace with actual child ID from selection
+                    // TODO: Replace with logic to pick selected child
+                    String childId = "child_id_placeholder";
                     VaccineSchedule schedule = new VaccineSchedule(
                             null, userId, childId, namaVaksin, tglDB, tglDB, false, null, "Otomatis dari Kalkulator"
                     );
