@@ -1,228 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F4F9FF"
-    tools:ignore="ContentDescription"
-    android:fillViewport="true">
+    tools:context=".activities.MainActivity">
 
-    <LinearLayout
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/component_top_toolbar"/>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_marginBottom="80dp" />
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_gravity="bottom"
+        app:fabCradleMargin="10dp"
+        app:fabCradleRoundedCornerRadius="10dp"
+        app:fabCradleVerticalOffset="10dp"
+        app:backgroundTint="@color/white">
 
-        <!-- ================= HEADER ================= -->
-        <LinearLayout
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigationView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            app:menu="@menu/bottom_nav_menu"
+            app:labelVisibilityMode="labeled"
+            app:itemIconTint="@color/colorPrimary"
+            app:itemTextColor="@color/colorPrimary"
+            app:elevation="0dp" />
 
-            <TextView
-                android:id="@+id/tvTitle"
-                android:text="Beranda"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="#0D47A1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+    </com.google.android.material.bottomappbar.BottomAppBar>
 
-            <!-- PROFILE BUTTON (kanan atas) -->
-            <ImageView
-                android:id="@+id/btnProfile"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_profile"
-                android:background="@drawable/bg_profile_round"
-                android:padding="6dp" />
-        </LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabEmergency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_logo_sehatin"
+        app:backgroundTint="@color/colorEmergency"
+        app:tint="@android:color/white"
+        app:layout_anchor="@id/bottomAppBar"
+        app:maxImageSize="32dp"
+        android:contentDescription="Emergency Call" />
 
-        <!-- SPACING -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="16dp"/>
-
-        <!-- ================= PANIC SECTION ================= -->
-        <LinearLayout
-            android:id="@+id/btnPanic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="18dp"
-            android:background="@drawable/bg_panic_card"
-            android:elevation="4dp"
-            android:clickable="true"
-            android:focusable="true">
-
-            <!-- PANIC TITLE -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_warning"
-                    android:layout_marginEnd="12dp" />
-
-                <TextView
-                    android:text="Telepon Darurat"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-
-        </LinearLayout>
-
-        <!-- SPACING -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-
-        <!-- ================= MENU GRID ================= -->
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="2">
-
-            <!-- ================= CARD: JADWAL ================= -->
-            <LinearLayout
-                android:id="@+id/btnJadwal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_columnWeight="1"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card"
-                android:padding="18dp"
-                android:elevation="3dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:src="@drawable/ic_calendar"/>
-
-                <TextView
-                    android:text="Jadwal Imunisasi"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="#0D47A1"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <!-- ================= CARD: INFO ================= -->
-            <LinearLayout
-                android:id="@+id/btnInfo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_columnWeight="1"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card"
-                android:padding="18dp"
-                android:elevation="3dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:src="@drawable/ic_info"/>
-
-                <TextView
-                    android:text="Info Kesehatan"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:textColor="#0D47A1"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <!-- ================= CARD: RIWAYAT ================= -->
-            <LinearLayout
-                android:id="@+id/btnRiwayat"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_columnWeight="1"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card"
-                android:padding="18dp"
-                android:elevation="3dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:src="@drawable/ic_history"/>
-
-                <TextView
-                    android:text="Riwayat Anak"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="#0D47A1"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <!-- ================= CARD: CHAT ================= -->
-            <LinearLayout
-                android:id="@+id/btnChat"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_columnWeight="1"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card"
-                android:padding="18dp"
-                android:elevation="3dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:src="@drawable/ic_chat"/>
-
-                <TextView
-                    android:text="Chat Bidan"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="#0D47A1"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-        </GridLayout>
-
-        <Button
-            android:id="@+id/testButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TEST WORKER"
-            android:textStyle="bold"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="30dp"
-            android:backgroundTint="#1565C0"
-            android:background="@drawable/rounded_button"
-            android:textColor="@android:color/white" />
-
-    </LinearLayout>
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
