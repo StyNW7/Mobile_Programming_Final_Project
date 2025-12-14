@@ -75,16 +75,11 @@ public class MainActivity extends AppCompatActivity {
             if (id == R.id.nav_home) {
                 selectedFragment = new HomeFragment();
             } else if (id == R.id.nav_chatbot) {
-                // selectedFragment = new ChatbotFragment();
-                // Placeholder for now:
                 selectedFragment = new HomeFragment();
             } else if (id == R.id.nav_article) {
-                // selectedFragment = new ArticleFragment();
-                // Placeholder for now:
-                selectedFragment = new HomeFragment();
+                Intent intent = new Intent(MainActivity.this, InfoRubrikActivity.class);
+                startActivity(intent);
             } else if (id == R.id.nav_profile) {
-                // selectedFragment = new ProfileFragment();
-                // Placeholder for now:
                 selectedFragment = new HomeFragment();
             }
 

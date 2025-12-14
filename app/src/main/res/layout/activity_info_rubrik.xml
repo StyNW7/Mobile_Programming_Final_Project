@@ -1,116 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    tools:context="id.example.sehatin.activities.InfoRubrikActivity">
+    tools:context=".activities.InfoRubrikActivity">
 
-    <LinearLayout
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/component_top_toolbar"/>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_marginBottom="80dp">
 
-        <!-- HERO IMAGE -->
-
-        <!-- HEADER -->
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginBottom="20dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/rubrik_header" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Rubrik Informasi"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            android:textColor="@color/colorPrimaryDark"
-            android:layout_marginBottom="6dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Informasi penting seputar kesehatan ibu &amp; anak, nutrisi, dan pencegahan stunting."
-            android:textSize="15sp"
-            android:lineSpacingExtra="3dp"
-            android:textColor="@color/colorTextPrimary"
-            android:layout_marginBottom="20dp"/>
-
-
-        <!-- INFO CHIPS -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginBottom="20dp">
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/rubrik_header"
+                android:background="@drawable/bg_card"
+                android:clipToOutline="true"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🍼 Bayi"
-                android:padding="10dp"
-                android:background="@drawable/chip_bg"
-                android:layout_marginEnd="8dp"/>
+                android:text="Rubrik Informasi"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryVariant"
+                android:layout_marginBottom="6dp"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🤰 Ibu Hamil"
-                android:padding="10dp"
-                android:background="@drawable/chip_bg"
-                android:layout_marginEnd="8dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🥗 Nutrisi"
-                android:padding="10dp"
-                android:background="@drawable/chip_bg"/>
-        </LinearLayout>
-
-
-        <!-- CARD LIST -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="6dp">
-
-            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:orientation="vertical">
+                android:text="Informasi penting seputar kesehatan ibu &amp; anak, nutrisi, dan pencegahan stunting."
+                android:textSize="15sp"
+                android:lineSpacingExtra="3dp"
+                android:textColor="@color/colorTextPrimary"
+                android:layout_marginBottom="20dp"/>
 
-                <TextView
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Topik Edukasi"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:layout_marginBottom="8dp"/>
+                    android:orientation="horizontal">
 
-                <ListView
-                    android:id="@+id/lv_rubrik_info"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🍼 Bayi"
+                        android:padding="10dp"
+                        android:background="@drawable/bg_input_field"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🤰 Ibu Hamil"
+                        android:padding="10dp"
+                        android:background="@drawable/bg_input_field"
+                        android:layout_marginEnd="8dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🥗 Nutrisi"
+                        android:padding="10dp"
+                        android:background="@drawable/bg_input_field"/>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/colorSurface">
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"
-                    android:divider="@android:color/transparent"
-                    android:dividerHeight="20dp"
-                    android:entries="@array/info_topics" />
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:orientation="vertical">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Daftar Artikel"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_marginBottom="12dp"/>
 
-        </androidx.cardview.widget.CardView>
+                    <ListView
+                        android:id="@+id/lv_rubrik_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="400dp"
+                        android:dividerHeight="10dp"
+                        android:divider="@android:color/transparent"
+                        android:nestedScrollingEnabled="true" />
 
-    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-</ScrollView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:fabCradleMargin="10dp"
+        app:fabCradleRoundedCornerRadius="10dp"
+        app:fabCradleVerticalOffset="10dp"
+        app:backgroundTint="@color/colorSurface">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigationView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            app:menu="@menu/bottom_nav_menu"
+            app:labelVisibilityMode="labeled"
+            app:itemIconTint="@color/colorPrimary"
+            app:itemTextColor="@color/colorPrimary"
+            app:elevation="0dp" />
+
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabEmergency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_logo_sehatin"
+        app:backgroundTint="@color/colorEmergency"
+        app:tint="@android:color/white"
+        app:layout_anchor="@id/bottomAppBar"
+        app:maxImageSize="32dp"
+        android:contentDescription="Emergency Call" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
