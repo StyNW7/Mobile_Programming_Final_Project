@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private BottomNavigationView bottomNavigationView;
     private FloatingActionButton fabEmergency;
-    private ImageButton btnSignOut;
+    private ImageView btnSignOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
