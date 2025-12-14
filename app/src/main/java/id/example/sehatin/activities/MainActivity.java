@@ -1,141 +1,105 @@
 package id.example.sehatin.activities;
 
-import id.example.sehatin.R;
-import id.example.sehatin.firebase.DatabaseHelper;
-import id.example.sehatin.models.User;
-import id.example.sehatin.models.VaccineSchedule;
-import id.example.sehatin.utils.SessionManager; // IMPORT SESSION MANAGER
-import id.example.sehatin.workers.VaccineWorker;
-
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
+import androidx.fragment.app.Fragment;
 
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import id.example.sehatin.R;
+import id.example.sehatin.fragments.HomeFragment;
+// You need to create these other fragments or use placeholders
+// import id.example.sehatin.fragments.ChatbotFragment;
+// import id.example.sehatin.fragments.ArticleFragment;
+// import id.example.sehatin.fragments.ProfileFragment;
+import id.example.sehatin.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
 
-    DatabaseHelper helper;
-    SessionManager sessionManager; // 1. Define SessionManager
-    User currentUser;              // 2. Define Current User
-
-    LinearLayout btnPanic, btnJadwal, btnInfo, btnRiwayat, btnChat;
+    private SessionManager sessionManager;
+    private BottomNavigationView bottomNavigationView;
+    private FloatingActionButton fabEmergency;
+    private ImageButton btnSignOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 3. Initialize Helpers
-        helper = new DatabaseHelper();
         sessionManager = new SessionManager(this);
 
-        // 4. CHECK LOGIN STATUS
+        // Check Login
         if (!sessionManager.isLoggedIn()) {
-            // If not logged in, force back to Login Page
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;
         }
 
-        // 5. LOAD USER DATA
-        currentUser = sessionManager.getUserDetail();
+        // --- SETUP UI ---
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        fabEmergency = findViewById(R.id.fabEmergency);
+        btnSignOut = findViewById(R.id.btnSignOut);
 
-        // Optional: Show Welcome Toast or Set Title
-        // Toast.makeText(this, "Halo, " + currentUser.name, Toast.LENGTH_SHORT).show();
-
-        // --- UI Initialization ---
-        btnPanic = findViewById(R.id.btnPanic);
-        btnJadwal = findViewById(R.id.btnJadwal);
-        btnInfo = findViewById(R.id.btnInfo);
-        btnRiwayat = findViewById(R.id.btnRiwayat);
-        btnChat = findViewById(R.id.btnChat);
-
-        setupButtonListeners();
-        setupTestButton(); // Refactored test button into a method for cleaner code
-    }
-
-    private void setupButtonListeners() {
-        btnPanic.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, EmergencyActivity.class));
-        });
-
-        btnJadwal.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, ImunisasiActivity.class));
-        });
-
-        btnInfo.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, InfoRubrikActivity.class));
-        });
-
-        btnRiwayat.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, RiwayatActivity.class));
-        });
-
-        btnChat.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, EmergencyActivity.class));
-        });
-    }
-
-    private void setupTestButton() {
-        // Permission Check for Notifications (Android 13+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
-            }
+        // 1. Default Fragment (Home)
+        if (savedInstanceState == null) {
+            loadFragment(new HomeFragment());
         }
 
-        Button btnTes = findViewById(R.id.testButton);
-
-        btnTes.setOnClickListener(v -> {
-            // Hitung tanggal besok
-            Calendar cal = Calendar.getInstance();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            String tglToday = sdf.format(cal.getTime());
-
-            // 6. USE REAL USER DATA FOR DUMMY OBJECT
-            VaccineSchedule dummyData = new VaccineSchedule(
-                    null, // ID generated otomatis
-                    currentUser.id,     // <-- Uses Logged In User ID
-                    currentUser.name,   // <-- Uses Logged In User Name
-                    "Vaksin Cacar (Tes Real User)",
-                    tglToday,
-                    "2025-11-30",
-                    false,
-                    null,
-                    ""
-            );
-
-            helper.addVaccineSchedule(dummyData, task -> {
-                if (task.isSuccessful()) {
-                    Log.d("TEST_DATA", "Data dummy masuk untuk: " + currentUser.name);
-                    Toast.makeText(this, "Data Masuk untuk " + currentUser.name, Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.e("TEST_DATA", "Gagal: " + task.getException());
-                }
-            });
-
-            // Trigger Worker for testing
-            OneTimeWorkRequest testWork = new OneTimeWorkRequest.Builder(VaccineWorker.class)
-                    .build();
-            WorkManager.getInstance(this).enqueue(testWork);
+        // 2. Setup Top Bar Sign Out
+        btnSignOut.setOnClickListener(v -> {
+            sessionManager.logout();
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
+
+        // 3. Setup Bottom Navigation
+        // Disable the middle placeholder click
+        bottomNavigationView.getMenu().findItem(R.id.nav_placeholder).setEnabled(false);
+
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                selectedFragment = new HomeFragment();
+            } else if (id == R.id.nav_chatbot) {
+                // selectedFragment = new ChatbotFragment();
+                // Placeholder for now:
+                selectedFragment = new HomeFragment();
+            } else if (id == R.id.nav_article) {
+                // selectedFragment = new ArticleFragment();
+                // Placeholder for now:
+                selectedFragment = new HomeFragment();
+            } else if (id == R.id.nav_profile) {
+                // selectedFragment = new ProfileFragment();
+                // Placeholder for now:
+                selectedFragment = new HomeFragment();
+            }
+
+            if (selectedFragment != null) {
+                loadFragment(selectedFragment);
+                return true;
+            }
+            return false;
+        });
+
+        // 4. Setup Middle FAB (Emergency)
+        fabEmergency.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, EmergencyActivity.class));
+        });
+    }
+
+    private void loadFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 }
