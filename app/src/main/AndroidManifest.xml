@@ -17,9 +17,6 @@
             android:name=".activities.DetailArticleActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.DetailArtikelJava"
-            android:exported="false" />
-        <activity
             android:name=".LandingActivity"
             android:exported="true">
             <intent-filter>
