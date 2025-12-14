@@ -80,15 +80,16 @@ public class InfoRubrikActivity extends AppCompatActivity {
             int id = item.getItemId();
 
             if (id == R.id.nav_home) {
-                // Go back to Main Activity
                 startActivity(new Intent(this, MainActivity.class));
-                finish(); // Close this activity so back button works logically
+                overridePendingTransition(0, 0); // No animation (smoother)
+                finish();
                 return true;
             } else if (id == R.id.nav_chatbot) {
-                // Navigate to Chatbot (Implement later)
+                startActivity(new Intent(this, ChatbotActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
                 return true;
             } else if (id == R.id.nav_article) {
-                // Already here
                 return true;
             } else if (id == R.id.nav_profile) {
                 // Navigate to Profile (Implement later)

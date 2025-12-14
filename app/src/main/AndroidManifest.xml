@@ -33,6 +33,7 @@
         <activity android:name=".activities.ImunisasiActivity" />
         <activity android:name=".activities.InfoRubrikActivity" />
         <activity android:name=".activities.RiwayatActivity" />
+        <activity android:name=".activities.ChatbotActivity" />
     </application>
 
 </manifest>
