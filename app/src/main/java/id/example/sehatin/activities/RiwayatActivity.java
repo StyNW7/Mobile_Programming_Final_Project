@@ -1,13 +1,20 @@
 package id.example.sehatin.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,13 +24,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import id.example.sehatin.R;
 import id.example.sehatin.databinding.ActivityRiwayatBinding;
+import id.example.sehatin.utils.SessionManager;
 
 public class RiwayatActivity extends AppCompatActivity {
 
     private ActivityRiwayatBinding binding;
     private static final String PREFS_NAME = "sehatin_prefs";
     private static final String KEY_RIWAYAT = "riwayat_list";
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +41,61 @@ public class RiwayatActivity extends AppCompatActivity {
         binding = ActivityRiwayatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        sessionManager = new SessionManager(this);
+
+        setupTopBar();
+        setupBottomNavigation();
+
         // tombol simpan
         binding.btnSimpanRiwayat.setOnClickListener(v -> onSaveClicked());
+    }
+
+    private void setupTopBar() {
+        TextView tvTitle = findViewById(R.id.tvToolbarTitle);
+        if (tvTitle != null) tvTitle.setText("Riwayat Kesehatan");
+
+        ImageView btnSignOut = findViewById(R.id.btnSignOut);
+        if (btnSignOut != null) {
+            btnSignOut.setOnClickListener(v -> {
+                sessionManager.logout();
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            });
+        }
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNav = binding.bottomNavigationView;
+        FloatingActionButton fab = binding.fabEmergency;
+
+        // Highlight Home as the parent category
+        bottomNav.setSelectedItemId(R.id.nav_home);
+
+        bottomNav.getMenu().findItem(R.id.nav_placeholder).setEnabled(false);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+                return true;
+            } else if (id == R.id.nav_article) {
+                startActivity(new Intent(this, InfoRubrikActivity.class));
+                finish();
+                return true;
+            } else if (id == R.id.nav_chatbot) {
+                // Placeholder for Chatbot
+                return true;
+            } else if (id == R.id.nav_profile) {
+                // Placeholder for Profile
+                return true;
+            }
+            return false;
+        });
+
+        fab.setOnClickListener(v -> startActivity(new Intent(this, EmergencyActivity.class)));
     }
 
     private void onSaveClicked() {
@@ -90,7 +153,6 @@ public class RiwayatActivity extends AppCompatActivity {
         }
     }
 
-    // Ambil riwayat yang sudah tersimpan (jika belum ada, kembalikan JSONArray kosong)
     private JSONArray loadHistory() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String raw = prefs.getString(KEY_RIWAYAT, null);
@@ -104,7 +166,6 @@ public class RiwayatActivity extends AppCompatActivity {
         }
     }
 
-    // Simpan JSONArray ke SharedPreferences
     private boolean saveHistory(JSONArray arr) {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
@@ -112,11 +173,9 @@ public class RiwayatActivity extends AppCompatActivity {
         return ed.commit();
     }
 
-    // Tampilkan AlertDialog dengan daftar riwayat yang tersimpan
     private void showHistoryDialog(JSONArray arr) {
         int n = arr.length();
         if (n == 0) {
-            // bila kosong, kasih pesan singkat
             new AlertDialog.Builder(this)
                     .setTitle("Riwayat Kesehatan")
                     .setMessage("Belum ada riwayat tersimpan.")
@@ -125,7 +184,6 @@ public class RiwayatActivity extends AppCompatActivity {
             return;
         }
 
-        // Buat array string untuk ditampilkan di dialog
         String[] items = new String[n];
         for (int i = 0; i < n; i++) {
             try {
@@ -142,11 +200,9 @@ public class RiwayatActivity extends AppCompatActivity {
             }
         }
 
-        // Tampilkan dialog (tappable, scrollable)
         new AlertDialog.Builder(this)
                 .setTitle("Riwayat Kesehatan (" + n + ")")
                 .setItems(items, (dialog, which) -> {
-                    // opsi: saat klik item, kita bisa tampilkan detail
                     try {
                         JSONObject obj = arr.getJSONObject(which);
                         String tanggal = obj.optString("tanggal", "-");
@@ -168,7 +224,6 @@ public class RiwayatActivity extends AppCompatActivity {
                 .show();
     }
 
-    // Format timestamp human readable
     private String currentTimestamp() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
         return sdf.format(new Date());
