@@ -18,6 +18,7 @@ import id.example.sehatin.fragments.HomeFragment;
 // import id.example.sehatin.fragments.ArticleFragment;
 // import id.example.sehatin.fragments.ProfileFragment;
 import id.example.sehatin.utils.SessionManager;
+import androidx.appcompat.app.AppCompatDelegate;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
