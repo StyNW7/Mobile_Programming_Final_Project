@@ -34,6 +34,7 @@
         <activity android:name=".activities.InfoRubrikActivity" />
         <activity android:name=".activities.RiwayatActivity" />
         <activity android:name=".activities.ChatbotActivity" />
+        <activity android:name=".activities.ProfileActivity" />
     </application>
 
 </manifest>

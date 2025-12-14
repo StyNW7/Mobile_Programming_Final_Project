@@ -83,7 +83,9 @@ public class MainActivity extends AppCompatActivity {
                 overridePendingTransition(0, 0);
                 finish();
             } else if (id == R.id.nav_profile) {
-                selectedFragment = new HomeFragment();
+                startActivity(new Intent(this, ProfileActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
             }
 
             if (selectedFragment != null) {
