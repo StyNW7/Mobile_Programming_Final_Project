@@ -17,18 +17,18 @@
         app:layout_constraintGuide_percent="0.82" />
 
     <!-- SKIP -->
-    <TextView
-        android:id="@+id/tvSkip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Lewati"
-        android:textStyle="bold"
-        android:textSize="14sp"
-        android:layout_margin="20dp"
-        android:padding="6dp"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+<!--    <TextView-->
+<!--        android:id="@+id/tvSkip"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Lewati"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textSize="14sp"-->
+<!--        android:layout_margin="20dp"-->
+<!--        android:padding="6dp"-->
+<!--        android:textColor="@color/colorAccent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"/>-->
 
     <!-- ========= ILLUSTRATION ========= -->
     <ImageView

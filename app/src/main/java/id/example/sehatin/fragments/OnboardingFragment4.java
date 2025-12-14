@@ -33,15 +33,15 @@ public class OnboardingFragment4 extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextView tvSkip = view.findViewById(R.id.tvSkip);
+//        TextView tvSkip = view.findViewById(R.id.tvSkip);
         Button btnLogin = view.findViewById(R.id.btn_login);
         Button btnRegister = view.findViewById(R.id.btn_register);
 
         // ==== SKIP ====
-        tvSkip.setOnClickListener(v -> {
-            startActivity(new Intent(requireActivity(), MainActivity.class));
-            requireActivity().finish();
-        });
+//        tvSkip.setOnClickListener(v -> {
+//            startActivity(new Intent(requireActivity(), MainActivity.class));
+//            requireActivity().finish();
+//        });
 
         // ==== LOGIN ====
         btnLogin.setOnClickListener(v ->
