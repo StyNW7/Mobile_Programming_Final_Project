@@ -102,10 +102,10 @@
                 <ListView
                     android:id="@+id/lv_rubrik_info"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="250dp"
                     android:divider="@android:color/transparent"
-                    android:dividerHeight="8dp"
-                    android:entries="@array/info_topics"/>
+                    android:dividerHeight="20dp"
+                    android:entries="@array/info_topics" />
 
             </LinearLayout>
 

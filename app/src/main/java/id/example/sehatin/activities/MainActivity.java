@@ -82,38 +82,51 @@ public class MainActivity extends AppCompatActivity {
 
         // fixed userId
         String userId = "user_tes_124";
+
         btnTes.setOnClickListener(v -> {
+            // 1. Trigger the seeding method from your helper
+            helper.seedDummyData();
 
-            // Hitung tanggal besok
-            Calendar cal = Calendar.getInstance();
-//            cal.add(Calendar.DAY_OF_YEAR, 1);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            String tglToday = sdf.format(cal.getTime());
+            // 2. Show a toast to confirm the command was sent
+            Toast.makeText(MainActivity.this, "Seeding Article Data...", Toast.LENGTH_SHORT).show();
 
-            // Buat object dummy
-
-//            String currUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            VaccineSchedule dummyData = new VaccineSchedule(
-                    null, // ID null biar digenerate otomatis
-                    userId,
-                    "Budi123",
-                    "Vaksin Cacar (Tes)",
-                    tglToday, // Masukkan tanggal besok agar Worker mendeteksi
-                    "2025-11-30",
-                    false,
-                    null,
-                    ""
-            );
-
-            helper.addVaccineSchedule(dummyData, task -> {
-                if (task.isSuccessful()) {
-                    Log.d("TEST_DATA", "Data dummy berhasil masuk!");
-                    Toast.makeText(this, "Data Dummy Masuk!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.e("TEST_DATA", "Gagal: " + task.getException());
-                }
-            });
+            // Optional: Log to console to track it
+            Log.d("SEEDING", "Attempting to seed dummy data...");
         });
+
+//        btnTes.setOnClickListener(v -> {
+//
+//            // Hitung tanggal besok
+//            Calendar cal = Calendar.getInstance();
+////            cal.add(Calendar.DAY_OF_YEAR, 1);
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+//            String tglToday = sdf.format(cal.getTime());
+//
+//            // Buat object dummy
+//
+////            String currUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//            VaccineSchedule dummyData = new VaccineSchedule(
+//                    null, // ID null biar digenerate otomatis
+//                    userId,
+//                    "Budi123",
+//                    "Vaksin Cacar (Tes)",
+//                    tglToday, // Masukkan tanggal besok agar Worker mendeteksi
+//                    "2025-11-30",
+//                    false,
+//                    null,
+//                    ""
+//            );
+//
+//            helper.addVaccineSchedule(dummyData, task -> {
+//                if (task.isSuccessful()) {
+//                    Log.d("TEST_DATA", "Data dummy berhasil masuk!");
+//                    Toast.makeText(this, "Data Dummy Masuk!", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Log.e("TEST_DATA", "Gagal: " + task.getException());
+//                }
+//            });
+//
+//        });
 
         // buat testing nnt diapus
         OneTimeWorkRequest testWork = new OneTimeWorkRequest.Builder(VaccineWorker.class)
