@@ -2,7 +2,9 @@ package id.example.sehatin.activities;
 
 import id.example.sehatin.R;
 import id.example.sehatin.firebase.DatabaseHelper;
+import id.example.sehatin.models.User;
 import id.example.sehatin.models.VaccineSchedule;
+import id.example.sehatin.utils.SessionManager; // IMPORT SESSION MANAGER
 import id.example.sehatin.workers.VaccineWorker;
 
 import android.content.Intent;
@@ -12,14 +14,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -32,26 +33,46 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     DatabaseHelper helper;
+    SessionManager sessionManager; // 1. Define SessionManager
+    User currentUser;              // 2. Define Current User
 
     LinearLayout btnPanic, btnJadwal, btnInfo, btnRiwayat, btnChat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        helper = new DatabaseHelper();
-        // jangan di uncomment
-        // helper.seedDummyData();
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
+        // 3. Initialize Helpers
+        helper = new DatabaseHelper();
+        sessionManager = new SessionManager(this);
+
+        // 4. CHECK LOGIN STATUS
+        if (!sessionManager.isLoggedIn()) {
+            // If not logged in, force back to Login Page
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+            return;
+        }
+
+        // 5. LOAD USER DATA
+        currentUser = sessionManager.getUserDetail();
+
+        // Optional: Show Welcome Toast or Set Title
+        // Toast.makeText(this, "Halo, " + currentUser.name, Toast.LENGTH_SHORT).show();
+
+        // --- UI Initialization ---
         btnPanic = findViewById(R.id.btnPanic);
         btnJadwal = findViewById(R.id.btnJadwal);
         btnInfo = findViewById(R.id.btnInfo);
         btnRiwayat = findViewById(R.id.btnRiwayat);
         btnChat = findViewById(R.id.btnChat);
 
+        setupButtonListeners();
+        setupTestButton(); // Refactored test button into a method for cleaner code
+    }
+
+    private void setupButtonListeners() {
         btnPanic.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, EmergencyActivity.class));
         });
@@ -71,46 +92,31 @@ public class MainActivity extends AppCompatActivity {
         btnChat.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, EmergencyActivity.class));
         });
+    }
 
-        // test pke dummy data
+    private void setupTestButton() {
+        // Permission Check for Notifications (Android 13+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
             }
         }
-        Button btnTes = findViewById(R.id.testButton); // Pastikan buat button dulu di XML atau panggil langsung tanpa tombol
 
-        // fixed userId
-        String userId = "user_tes_124";
-
-//        btnTes.setOnClickListener(v -> {
-//            // 1. Trigger the seeding method from your helper
-//            helper.seedDummyData();
-//
-//            // 2. Show a toast to confirm the command was sent
-//            Toast.makeText(MainActivity.this, "Seeding Article Data...", Toast.LENGTH_SHORT).show();
-//
-//            // Optional: Log to console to track it
-//            Log.d("SEEDING", "Attempting to seed dummy data...");
-//        });
+        Button btnTes = findViewById(R.id.testButton);
 
         btnTes.setOnClickListener(v -> {
-
             // Hitung tanggal besok
             Calendar cal = Calendar.getInstance();
-//            cal.add(Calendar.DAY_OF_YEAR, 1);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String tglToday = sdf.format(cal.getTime());
 
-            // Buat object dummy
-
-//            String currUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            // 6. USE REAL USER DATA FOR DUMMY OBJECT
             VaccineSchedule dummyData = new VaccineSchedule(
-                    null, // ID null biar digenerate otomatis
-                    userId,
-                    "Budi123",
-                    "Vaksin Cacar (Tes)",
-                    tglToday, // Masukkan tanggal besok agar Worker mendeteksi
+                    null, // ID generated otomatis
+                    currentUser.id,     // <-- Uses Logged In User ID
+                    currentUser.name,   // <-- Uses Logged In User Name
+                    "Vaksin Cacar (Tes Real User)",
+                    tglToday,
                     "2025-11-30",
                     false,
                     null,
@@ -119,39 +125,17 @@ public class MainActivity extends AppCompatActivity {
 
             helper.addVaccineSchedule(dummyData, task -> {
                 if (task.isSuccessful()) {
-                    Log.d("TEST_DATA", "Data dummy berhasil masuk!");
-                    Toast.makeText(this, "Data Dummy Masuk!", Toast.LENGTH_SHORT).show();
+                    Log.d("TEST_DATA", "Data dummy masuk untuk: " + currentUser.name);
+                    Toast.makeText(this, "Data Masuk untuk " + currentUser.name, Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e("TEST_DATA", "Gagal: " + task.getException());
                 }
             });
 
+            // Trigger Worker for testing
+            OneTimeWorkRequest testWork = new OneTimeWorkRequest.Builder(VaccineWorker.class)
+                    .build();
+            WorkManager.getInstance(this).enqueue(testWork);
         });
-
-        // buat testing nnt diapus
-        OneTimeWorkRequest testWork = new OneTimeWorkRequest.Builder(VaccineWorker.class)
-                .build();
-        WorkManager.getInstance(this).enqueue(testWork);
-
-        // testing db udh connect ke app blm
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        Map<String, Object> tesData = new HashMap<>();
-        tesData.put("pesan", "yo firebase ini testing 30/11/2025");
-        tesData.put("waktu", FieldValue.serverTimestamp());
-
-        db.collection("cek_koneksi")
-                .add(tesData)
-                .addOnSuccessListener(documentReference -> {
-                    // SUKSES!
-                    Log.d("CEK_FIREBASE", "Terhubung dengan ID: " + documentReference.getId());
-                    Toast.makeText(this, "Firebase Terhubung!", Toast.LENGTH_LONG).show();
-                })
-                .addOnFailureListener(e -> {
-                    // GAGAL!
-                    Log.e("CEK_FIREBASE", "Gagal connect", e);
-                    Toast.makeText(this, "Gagal connect: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
-
     }
 }

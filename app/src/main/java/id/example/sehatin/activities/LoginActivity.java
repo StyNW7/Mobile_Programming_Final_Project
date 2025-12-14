@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -12,98 +13,109 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import id.example.sehatin.databinding.ActivityLoginBinding;
 import id.example.sehatin.firebase.DatabaseHelper;
 import id.example.sehatin.models.User;
+import id.example.sehatin.utils.SessionManager; // IMPORT SESSION MANAGER
 
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
     private FirebaseAuth mAuth;
     private DatabaseHelper dbHelper;
+    private SessionManager sessionManager; // 1. Define SessionManager
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         mAuth = FirebaseAuth.getInstance();
         dbHelper = new DatabaseHelper();
+        sessionManager = new SessionManager(this); // 2. Initialize SessionManager
+
+        // Check if already logged in (Optional optimization)
+        if (sessionManager.isLoggedIn()) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
 
         setupListeners();
     }
 
     private void setupListeners() {
-
-        // LOGIN BUTTON
         binding.btnLogin.setOnClickListener(view -> {
-
             String email = binding.etEmail.getText().toString().trim();
             String password = binding.etPassword.getText().toString().trim();
 
-            // Field empty check
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields!", Toast.LENGTH_SHORT).show();
-                return;
+            // Clear previous errors
+            binding.tilEmail.setError(null);
+            binding.tilPassword.setError(null);
+
+            boolean isValid = true;
+
+            if (email.isEmpty()) {
+                binding.tilEmail.setError("Email tidak boleh kosong");
+                isValid = false;
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                binding.tilEmail.setError("Format email tidak valid");
+                isValid = false;
             }
 
-            // Email validation
-            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "Invalid email format!", Toast.LENGTH_SHORT).show();
-                return;
+            if (password.isEmpty()) {
+                binding.tilPassword.setError("Password tidak boleh kosong");
+                isValid = false;
             }
 
-            // 1. Firebase Authentication: Sign In
+            if (!isValid) return;
+
+            showLoading(true);
+
+            // Firebase Authentication
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
-                            // AUTH SUCCESS
                             String userId = mAuth.getCurrentUser().getUid();
-
-                            // 2. Retrieve User Data from Firestore
                             fetchUserDataFromFirestore(userId);
-
                         } else {
-                            // AUTH FAILURE
-                            String errorMessage = task.getException() != null ? task.getException().getMessage() : "Login Gagal. Cek email dan password Anda.";
-                            Toast.makeText(this, "Login Gagal: " + errorMessage, Toast.LENGTH_LONG).show();
+                            showLoading(false);
+                            String error = task.getException() != null ? task.getException().getMessage() : "Login Gagal";
+                            Toast.makeText(this, error, Toast.LENGTH_LONG).show();
                         }
                     });
         });
 
-        // GO TO REGISTER
-        binding.tvRegister.setOnClickListener(v ->
-                startActivity(new Intent(LoginActivity.this, RegisterActivity.class))
-        );
+        binding.tvRegister.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+            finish();
+        });
     }
 
     private void fetchUserDataFromFirestore(String userId) {
         dbHelper.getUser(userId, task -> {
+            showLoading(false);
             if (task.isSuccessful() && task.getResult() != null) {
-
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    // Convert Firestore Document to your User Model
                     User user = document.toObject(User.class);
 
-                    // 3. Login Success & Data Retrieved
+                    // 3. SAVE SESSION
+                    sessionManager.createLoginSession(user);
+
                     Toast.makeText(this, "Selamat datang, " + user.getName(), Toast.LENGTH_SHORT).show();
 
-                    // Navigate to the Main Activity
-                    // You should pass the User object or its ID to the main activity
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    // Consider adding the User object as a serializable extra here
                     startActivity(intent);
                     finish();
-
                 } else {
-                    Toast.makeText(this, "Profil tidak ditemukan di database.", Toast.LENGTH_LONG).show();
-                    // Optional: Sign out the user if their data is missing in Firestore
-                    mAuth.signOut();
+                    Toast.makeText(this, "Profil tidak ditemukan", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(this, "Gagal mengambil data profil.", Toast.LENGTH_LONG).show();
-                mAuth.signOut();
+                Toast.makeText(this, "Gagal memuat profil", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showLoading(boolean isLoading) {
+        binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        binding.btnLogin.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
     }
 }
