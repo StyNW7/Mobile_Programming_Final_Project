@@ -94,7 +94,7 @@ public class HomeFragment extends Fragment {
         btnJadwal.setOnClickListener(v -> startActivity(new Intent(getActivity(), ImunisasiActivity.class)));
         btnInfo.setOnClickListener(v -> startActivity(new Intent(getActivity(), InfoRubrikActivity.class)));
         btnRiwayat.setOnClickListener(v -> startActivity(new Intent(getActivity(), RiwayatActivity.class)));
-        btnChat.setOnClickListener(v -> startActivity(new Intent(getActivity(), EmergencyActivity.class)));
+        btnChat.setOnClickListener(v -> startActivity(new Intent(getActivity(), AddChildActivity.class)));
 
         // 5. Test Button
         Button btnTest = view.findViewById(R.id.testButton);

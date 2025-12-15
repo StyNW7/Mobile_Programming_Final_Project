@@ -4,10 +4,16 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+<<<<<<< HEAD
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+=======
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+>>>>>>> 11089609eeea7244ec305ad8968ef5c12f32ef61
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,6 +39,7 @@ import id.example.sehatin.R;
 import id.example.sehatin.adapters.JadwalImunisasiAdapter;
 import id.example.sehatin.databinding.ActivityImunisasiBinding;
 import id.example.sehatin.firebase.DatabaseHelper;
+import id.example.sehatin.models.Child;
 import id.example.sehatin.models.JadwalItem;
 import id.example.sehatin.models.VaccineSchedule;
 import id.example.sehatin.utils.SessionManager;
@@ -48,6 +55,11 @@ public class ImunisasiActivity extends AppCompatActivity {
     private JadwalImunisasiAdapter adapter;
     private final List<JadwalItem> jadwalItems = new ArrayList<>();
     private final List<Object[]> children = new ArrayList<>();
+    
+    // New variables for child selection
+    private final List<Child> childrenList = new ArrayList<>();
+    private ArrayAdapter<String> childNameAdapter;
+    private String selectedChildId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +74,8 @@ public class ImunisasiActivity extends AppCompatActivity {
         setupTopBar();
         setupBottomNavigation();
         setupRecyclerView();
+        setupSpinner();
+        loadChildrenFromFirestore();
 
         binding.etTglLahir.setFocusable(false);
         binding.etTglLahir.setClickable(true);
@@ -189,6 +203,85 @@ public class ImunisasiActivity extends AppCompatActivity {
         binding.rvJadwalImunisasi.setAdapter(adapter);
     }
 
+    private void setupSpinner() {
+        List<String> childNames = new ArrayList<>();
+        childNames.add("Pilih Nama Anak"); // Default option
+        
+        childNameAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, childNames);
+        childNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinnerNamaAnak.setAdapter(childNameAdapter);
+        
+        binding.spinnerNamaAnak.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position > 0) { // Skip the default "Pilih Nama Anak" option
+                    Child selectedChild = childrenList.get(position - 1);
+                    selectedChildId = selectedChild.id;
+                    
+                    // Auto-fill birth date
+                    if (selectedChild.birthDate != null && !selectedChild.birthDate.isEmpty()) {
+                        try {
+                            SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                            SimpleDateFormat displayFormat = new SimpleDateFormat("dd / MM / yyyy", Locale.getDefault());
+                            Date date = dbFormat.parse(selectedChild.birthDate);
+                            if (date != null) {
+                                binding.etTglLahir.setText(displayFormat.format(date));
+                            }
+                        } catch (ParseException e) {
+                            Log.e("DateParse", "Error parsing birth date", e);
+                        }
+                    }
+                } else {
+                    selectedChildId = null;
+                    binding.etTglLahir.setText("");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                selectedChildId = null;
+            }
+        });
+    }
+
+    private void loadChildrenFromFirestore() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(this, "User tidak terautentikasi", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        String userId = currentUser.getUid();
+        
+        childrenCollectionReference
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                childrenList.clear();
+                List<String> childNames = new ArrayList<>();
+                childNames.add("Pilih Nama Anak"); // Default option
+                
+                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                    Child child = doc.toObject(Child.class);
+                    child.id = doc.getId(); // Set the document ID
+                    childrenList.add(child);
+                    childNames.add(child.name);
+                }
+                
+                childNameAdapter.clear();
+                childNameAdapter.addAll(childNames);
+                childNameAdapter.notifyDataSetChanged();
+                
+                if (childrenList.isEmpty()) {
+                    Toast.makeText(this, "Belum ada data anak. Silakan tambah data anak terlebih dahulu.", Toast.LENGTH_LONG).show();
+                }
+            })
+            .addOnFailureListener(e -> {
+                Log.e("Firestore", "Error loading children", e);
+                Toast.makeText(this, "Gagal memuat data anak: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+    }
+
     private Calendar getVaccineCalendar(Calendar birthDate, int bulanDitambah) {
         Calendar targetDate = (Calendar) birthDate.clone();
         targetDate.add(Calendar.MONTH, bulanDitambah);
@@ -258,11 +351,15 @@ public class ImunisasiActivity extends AppCompatActivity {
 
                 jadwalItems.add(new JadwalItem(namaVaksin, tglUI, jarakBulan));
 
+<<<<<<< HEAD
                 if (currentUser != null) {
                     // TODO: Replace with logic to pick selected child
                     String childId = "child_id_placeholder";
+=======
+                if (currentUser != null && selectedChildId != null) {
+>>>>>>> 11089609eeea7244ec305ad8968ef5c12f32ef61
                     VaccineSchedule schedule = new VaccineSchedule(
-                            null, userId, childId, namaVaksin, tglDB, tglDB, false, null, "Otomatis dari Kalkulator"
+                            null, userId, selectedChildId, namaVaksin, tglDB, tglDB, false, null, "Otomatis dari Kalkulator"
                     );
                     dbHelper.addVaccineSchedule(schedule, task -> {
                         if (task.isSuccessful()) {
