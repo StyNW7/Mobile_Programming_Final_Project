@@ -19,7 +19,6 @@ import id.example.sehatin.fragments.OnboardingFragment3;
 import id.example.sehatin.fragments.OnboardingFragment4;
 
 public class LandingActivity extends AppCompatActivity {
-
     private ActivityLandingBinding binding;
     private final int TOTAL_PAGES = 4;
 
