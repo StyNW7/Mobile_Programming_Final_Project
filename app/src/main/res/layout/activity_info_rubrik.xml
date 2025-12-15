@@ -15,14 +15,16 @@
         android:padding="20dp">
 
         <!-- HERO IMAGE -->
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="295dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/rubrik_header"
-            android:layout_marginBottom="20dp"/>
 
         <!-- HEADER -->
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="20dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/rubrik_header" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -100,10 +102,10 @@
                 <ListView
                     android:id="@+id/lv_rubrik_info"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="250dp"
                     android:divider="@android:color/transparent"
-                    android:dividerHeight="8dp"
-                    android:entries="@array/info_topics"/>
+                    android:dividerHeight="20dp"
+                    android:entries="@array/info_topics" />
 
             </LinearLayout>
 

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
@@ -14,12 +15,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import id.example.sehatin.databinding.ActivityEmergencyBinding;
 
 public class EmergencyActivity extends AppCompatActivity {
 
+    private static final String TAG = "EmergencyActivity";
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    DocumentReference docRef = db.collection("emergencyContacts").document("0kS7VWGPf0DDpOOpgfzH");
+
     private static final int REQUEST_CALL_PHONE = 1;
-    private static final String EMERGENCY_NUMBER = "118";
+    private String emergencyNumber = "911"; // Default emergency number
 
     private ActivityEmergencyBinding binding;
     private Handler handler = new Handler();
@@ -30,6 +42,29 @@ public class EmergencyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityEmergencyBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Retrieve emergency contact from Firestore
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        String numberFromFirestore = document.getString("phoneNumber");
+                        if (numberFromFirestore != null && !numberFromFirestore.isEmpty()) {
+                            emergencyNumber = numberFromFirestore;
+                            Log.d(TAG, "Emergency number updated to: " + emergencyNumber);
+                        } else {
+                            Log.d(TAG, "Emergency number not found in document, using default.");
+                        }
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
 
         binding.btnCallEmergency.setOnTouchListener((v, event) -> {
 
@@ -69,7 +104,7 @@ public class EmergencyActivity extends AppCompatActivity {
     private void makeEmergencyCall() {
         try {
             Intent intent = new Intent(Intent.ACTION_CALL);
-            intent.setData(Uri.parse("tel:" + EMERGENCY_NUMBER));
+            intent.setData(Uri.parse("tel:" + emergencyNumber));
             startActivity(intent);
         } catch (Exception e) {
             Toast.makeText(this, "Gagal melakukan panggilan darurat!", Toast.LENGTH_SHORT).show();
@@ -89,7 +124,7 @@ public class EmergencyActivity extends AppCompatActivity {
                 makeEmergencyCall();
             } else {
                 Toast.makeText(this,
-                        "Permission ditolak! Hubungi manual: " + EMERGENCY_NUMBER,
+                        "Permission ditolak! Hubungi manual: " + emergencyNumber,
                         Toast.LENGTH_LONG).show();
             }
         }
