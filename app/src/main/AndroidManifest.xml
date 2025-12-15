@@ -36,12 +36,10 @@
         <activity android:name=".activities.ImunisasiActivity" />
         <activity android:name=".activities.InfoRubrikActivity" />
         <activity android:name=".activities.RiwayatActivity" />
-<<<<<<< HEAD
         <activity android:name=".activities.ChatbotActivity" />
         <activity android:name=".activities.ProfileActivity" />
-=======
         <activity android:name=".activities.AddChildActivity" />
->>>>>>> 11089609eeea7244ec305ad8968ef5c12f32ef61
+
     </application>
 
 </manifest>

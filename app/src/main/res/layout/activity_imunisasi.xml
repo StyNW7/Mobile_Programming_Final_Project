@@ -110,59 +110,10 @@
                     android:id="@+id/tv_umur_anak"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-<<<<<<< HEAD
                     android:text="👶 Umur: - "
                     android:padding="10dp"
                     android:background="@drawable/bg_input_field"
                     android:layout_marginEnd="8dp"/>
-=======
-                    android:text="Pilih Nama Anak"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:layout_marginBottom="6dp" />
-
-                <Spinner
-                    android:id="@+id/spinner_nama_anak"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:padding="12dp"
-                    android:background="@android:drawable/edit_text"
-                    android:layout_marginBottom="16dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tanggal Lahir Anak"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:layout_marginBottom="6dp" />
-
-                <EditText
-                    android:id="@+id/et_tgl_lahir"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:hint="DD / MM / YYYY"
-                    android:padding="12dp"
-                    android:background="@android:drawable/edit_text"
-                    android:focusable="false"
-                    android:inputType="none"
-                    android:drawableEnd="@android:drawable/ic_menu_today"
-                    android:drawableTint="@color/colorPrimary" />
-
-                <Button
-                    android:id="@+id/btn_hitung_jadwal"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="16dp"
-                    android:text="Hitung Jadwal &amp; Set Reminder"
-                    android:background="@drawable/rounded_button"
-                    android:textColor="@android:color/white"
-                    android:letterSpacing="0.04"
-                    android:textStyle="bold" />
-
->>>>>>> 11089609eeea7244ec305ad8968ef5c12f32ef61
 
                 <TextView
                     android:id="@+id/tv_total_vaksin"
