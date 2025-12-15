@@ -36,9 +36,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ChatbotActivity extends AppCompatActivity {
 
     // --- CONFIGURATION ---
-    // PASTE YOUR GROQ KEY HERE (starts with gsk_)
-//    private static final String GROQ_API_KEY = "Bearer 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";
-
     private static final String GROQ_API_KEY = "Bearer " + BuildConfig.GROQ_API_KEY;
 
     private static final String BASE_URL = "https://api.groq.com/";
