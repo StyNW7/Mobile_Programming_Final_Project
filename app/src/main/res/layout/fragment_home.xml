@@ -285,7 +285,8 @@
                         android:id="@+id/btnRefreshQuote"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_history"
+                        android:src="@drawable/ic_refresh"
+                        app:tint="#757575"
                         android:clickable="true"
                         android:tooltipText="Refresh Quote"/>
                 </LinearLayout>
@@ -304,13 +305,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <Button
-            android:id="@+id/testButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Test Worker"
-            android:backgroundTint="#BDBDBD"
-            android:textColor="#FFFFFF" />
+
 
     </LinearLayout>
 </ScrollView>

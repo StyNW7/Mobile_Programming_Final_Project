@@ -96,9 +96,7 @@ public class HomeFragment extends Fragment {
         btnRiwayat.setOnClickListener(v -> startActivity(new Intent(getActivity(), RiwayatActivity.class)));
         btnChat.setOnClickListener(v -> startActivity(new Intent(getActivity(), AddChildActivity.class)));
 
-        // 5. Test Button
-        Button btnTest = view.findViewById(R.id.testButton);
-        btnTest.setOnClickListener(v -> Toast.makeText(getContext(), "Worker Test Clicked", Toast.LENGTH_SHORT).show());
+
     }
 
     private void fetchWeatherData(double lat, double lon) {
