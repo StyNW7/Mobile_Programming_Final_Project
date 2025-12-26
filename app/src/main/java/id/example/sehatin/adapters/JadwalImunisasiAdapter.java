@@ -3,6 +3,7 @@ package id.example.sehatin.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,11 +15,16 @@ import id.example.sehatin.R;
 import id.example.sehatin.models.JadwalItem;
 
 public class JadwalImunisasiAdapter extends RecyclerView.Adapter<JadwalImunisasiAdapter.JadwalViewHolder> {
+    private final List<JadwalItem> jadwalList;
+    private final OnItemCheckListener listener;
 
-    private List<JadwalItem> jadwalList;
+    public interface OnItemCheckListener {
+        void onItemCheck(JadwalItem item);
+    }
 
-    public JadwalImunisasiAdapter(List<JadwalItem> jadwalList) {
+    public JadwalImunisasiAdapter(List<JadwalItem> jadwalList, OnItemCheckListener listener) {
         this.jadwalList = jadwalList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -33,6 +39,17 @@ public class JadwalImunisasiAdapter extends RecyclerView.Adapter<JadwalImunisasi
         JadwalItem item = jadwalList.get(position);
         holder.tvNamaVaksin.setText(item.getNamaVaksin() + " (Usia " + item.getUsia() + " bulan)");
         holder.tvTanggalVaksin.setText("📅 " + item.getTanggal());
+        
+        holder.cbIsCompleted.setOnCheckedChangeListener(null);
+        holder.cbIsCompleted.setChecked(item.isCompleted());
+
+        holder.cbIsCompleted.setOnClickListener(v -> {
+            boolean isChecked = holder.cbIsCompleted.isChecked();
+            item.setCompleted(isChecked);
+            if (listener != null) {
+                listener.onItemCheck(item);
+            }
+        });
     }
 
     @Override
@@ -40,14 +57,16 @@ public class JadwalImunisasiAdapter extends RecyclerView.Adapter<JadwalImunisasi
         return jadwalList.size();
     }
 
-    static class JadwalViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNamaVaksin;
-        TextView tvTanggalVaksin;
+    public static class JadwalViewHolder extends RecyclerView.ViewHolder {
+        final TextView tvNamaVaksin;
+        final TextView tvTanggalVaksin;
+        final CheckBox cbIsCompleted;
 
         public JadwalViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNamaVaksin = itemView.findViewById(R.id.tv_nama_vaksin);
             tvTanggalVaksin = itemView.findViewById(R.id.tv_tanggal_vaksin);
+            cbIsCompleted = itemView.findViewById(R.id.cb_is_completed);
         }
     }
 }

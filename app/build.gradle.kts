@@ -50,8 +50,8 @@ android {
 
     // It's recommended to add compileOptions for Java version compatibility
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     // If using Kotlin, add kotlinOptions
@@ -83,6 +83,7 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation(libs.firebase.firestore)
+    implementation("com.firebaseui:firebase-ui-firestore:8.0.2")
     implementation(libs.appcompat)
     implementation(libs.activity)
 

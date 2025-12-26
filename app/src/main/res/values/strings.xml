@@ -5,4 +5,8 @@
     <string name="chat_bidan">Chat Bidan</string>
     <string name="info_kesehatan">Info Kesehatan</string>
     <string name="beranda">Beranda</string>
+    <string name="title_riwayat_kesehatan">Riwayat Kesehatan</string>
+    <string name="nama_anak">Nama Anak</string>
+    <string name="data_anak">Data Anak</string>
+    <string name="hapus_data_anak">Hapus Data Anak</string>
 </resources>

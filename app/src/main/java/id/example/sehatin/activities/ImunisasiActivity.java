@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.Toast;
+
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +37,11 @@ import id.example.sehatin.firebase.DatabaseHelper;
 import id.example.sehatin.models.JadwalItem;
 import id.example.sehatin.models.VaccineSchedule;
 import id.example.sehatin.utils.SessionManager;
+import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.Spinner;
+// import id.example.sehatin.models.Child;
+
 
 public class ImunisasiActivity extends AppCompatActivity {
 
@@ -48,7 +53,14 @@ public class ImunisasiActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private JadwalImunisasiAdapter adapter;
     private final List<JadwalItem> jadwalItems = new ArrayList<>();
-    private final List<Object[]> children = new ArrayList<>();
+    // Format: [id, userId, name, birthdate, gender]
+    private final List<String[]> childList = new ArrayList<>(); 
+    private final List<String> childNames = new ArrayList<>();
+    private String selectedChildId = null;
+    // private String selectedChildName = null; // Unused
+    private Spinner spinnerAnak;
+    private ArrayAdapter<String> spinnerAdapter;
+    private final List<VaccineSchedule> existingSchedules = new ArrayList<>(); // To store status from DB
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +76,9 @@ public class ImunisasiActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupRecyclerView();
 
-        // Removed setupSpinner() and loadChildrenFromFirestore()
-        // because the XML layout does not have the Spinner element anymore.
+        // Setup Spinner
+        spinnerAnak = findViewById(R.id.spinner_anak);
+        loadChildrenForSpinner();
 
         binding.etTglLahir.setFocusable(false);
         binding.etTglLahir.setClickable(true);
@@ -79,8 +92,6 @@ public class ImunisasiActivity extends AppCompatActivity {
                 Toast.makeText(this, "Mohon masukkan Tanggal Lahir anak.", Toast.LENGTH_SHORT).show();
             }
         });
-
-        loadSchedulesFromFirestore();
     }
 
     private void setupTopBar() {
@@ -135,64 +146,153 @@ public class ImunisasiActivity extends AppCompatActivity {
         fab.setOnClickListener(v -> startActivity(new Intent(this, EmergencyActivity.class)));
     }
 
-    private void loadSchedulesFromFirestore() {
-        childrenCollectionReference.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                children.clear();
-                for (QueryDocumentSnapshot doc : task.getResult()) {
-                    children.add(new Object[]{doc.getId(), doc.getString("userId"), doc.getString("name"), doc.getString("birthdate")});
-                }
-                vaccinesCollectionReference.get().addOnCompleteListener(vaccineTask -> {
-                    if (vaccineTask.isSuccessful()) {
-                        jadwalItems.clear();
-                        SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                        SimpleDateFormat uiFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("id", "ID"));
 
-                        for (QueryDocumentSnapshot doc : vaccineTask.getResult()) {
-                            String childId = doc.getString("childId");
-                            String vaccineName = doc.getString("vaccineName");
-                            String scheduledDateStr = doc.getString("scheduledDate");
 
-                            if (childId == null) continue;
+    private void loadChildrenForSpinner() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = (currentUser != null) ? currentUser.getUid() : "";
+        if (userId.isEmpty()) return;
 
-                            for (Object[] child : children) {
-                                if (childId.equals(child[0])) {
-                                    String childBirthdateStr = (String) child[3];
-                                    try {
-                                        if (childBirthdateStr == null || scheduledDateStr == null) continue;
-                                        Date birthDate = dbFormat.parse(childBirthdateStr);
-                                        Date scheduledDate = dbFormat.parse(scheduledDateStr);
+        childrenCollectionReference.whereEqualTo("userId", userId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        childList.clear();
+                        childNames.clear();
+                        childNames.add("-- Pilih Anak --"); // Default option
 
-                                        if (birthDate != null && scheduledDate != null) {
-                                            Calendar startCalendar = Calendar.getInstance();
-                                            startCalendar.setTime(birthDate);
-                                            Calendar endCalendar = Calendar.getInstance();
-                                            endCalendar.setTime(scheduledDate);
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
+                            String id = doc.getId();
+                            String name = doc.getString("name");
+                            String birthDate = doc.getString("birthDate"); // Assuming 'birthDate' field matches
+                            if (birthDate == null) birthDate = doc.getString("birthdate"); // Try lowercase
+                            
+                            childList.add(new String[]{id, name, birthDate});
+                            childNames.add(name);
+                        }
 
-                                            int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
-                                            int usiaBulan = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+                        spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, childNames);
+                        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinnerAnak.setAdapter(spinnerAdapter);
 
-                                            String formattedScheduledDate = uiFormat.format(scheduledDate);
-                                            jadwalItems.add(new JadwalItem(vaccineName, formattedScheduledDate, usiaBulan));
+                        spinnerAnak.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                if (position > 0) {
+                                    // Adjusted index because of default option
+                                    String[] childData = childList.get(position - 1);
+                                    selectedChildId = childData[0];
+                                    // selectedChildName = childData[1]; // Unused
+                                    String birthDateIso = childData[2];
+                                    
+                                    // 1. Fetch existing status first
+                                    fetchExistingSchedules(selectedChildId, () -> {
+                                        // 2. Then calculate/display (using birthdate)
+                                        if (birthDateIso != null) {
+                                            try {
+                                                SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                                                SimpleDateFormat displayFormat = new SimpleDateFormat("dd / MM / yyyy", Locale.getDefault());
+                                                Date date = isoFormat.parse(birthDateIso);
+                                                if (date != null) {
+                                                    binding.etTglLahir.setText(displayFormat.format(date));
+                                                    // Automatically calculate/show schedule when child selected
+                                                    calculateAndDisplaySchedule(displayFormat.format(date));
+                                                }
+                                            } catch (ParseException e) {
+                                                Log.e("Imunisasi", "Date Parse Error", e);
+                                            }
                                         }
-                                    } catch (ParseException e) {
-                                        Log.e("DateParseError", "Failed to parse date string.", e);
-                                    }
-                                    break;
+                                    });
+
+                                } else {
+                                    selectedChildId = null;
+                                    // selectedChildName = null;
+                                    binding.etTglLahir.setText("");
+                                    jadwalItems.clear();
+                                    adapter.notifyDataSetChanged();
                                 }
                             }
-                        }
-                        adapter.notifyDataSetChanged();
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {}
+                        });
                     }
                 });
-            }
-        });
     }
 
     private void setupRecyclerView() {
         binding.rvJadwalImunisasi.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new JadwalImunisasiAdapter(jadwalItems);
+        binding.rvJadwalImunisasi.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new JadwalImunisasiAdapter(jadwalItems, item -> {
+            // On Item Checked
+            if (selectedChildId == null) return;
+            updateVaccineStatus(item);
+        });
         binding.rvJadwalImunisasi.setAdapter(adapter);
+    }
+    
+    private void fetchExistingSchedules(String childId, Runnable onComplete) {
+        vaccinesCollectionReference.whereEqualTo("childId", childId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        existingSchedules.clear();
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
+                            // Manual mapping or use helper
+                            VaccineSchedule schedule = new VaccineSchedule(
+                                    doc.getId(),
+                                    doc.getString("userId"),
+                                    doc.getString("childId"),
+                                    doc.getString("vaccineName"),
+                                    doc.getString("scheduledDate"),
+                                    doc.getString("reminderDate"),
+                                    Boolean.TRUE.equals(doc.getBoolean("isCompleted")), // Safe unboxing
+                                    doc.getString("completedDate"),
+                                    doc.getString("notes")
+                            );
+                            existingSchedules.add(schedule);
+                        }
+                    }
+                    if (onComplete != null) onComplete.run();
+                });
+    }
+
+    private void updateVaccineStatus(JadwalItem item) {
+        // Find if this vaccine already has a doc in 'existingSchedules' (and thus Firestore)
+        VaccineSchedule targetSchedule = null;
+        for (VaccineSchedule s : existingSchedules) {
+            if (s.vaccineName.equals(item.getNamaVaksin())) {
+                targetSchedule = s;
+                break;
+            }
+        }
+
+        if (targetSchedule != null) {
+            // Update existing
+            vaccinesCollectionReference.document(targetSchedule.id)
+                    .update("isCompleted", item.isCompleted())
+                    .addOnSuccessListener(aVoid -> Log.d("Imunisasi", "Status updated"));
+        } else {
+            // Create new if not exists (should rarely happen if we sync properly, but safe to have)
+             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+             String userId = (currentUser != null) ? currentUser.getUid() : "";
+             
+             // We need db format date
+             // For simplicity, we just save what we have. Ideally we pass real dates.
+             VaccineSchedule newSchedule = new VaccineSchedule(
+                     null, userId, selectedChildId, item.getNamaVaksin(), 
+                     "", // scheduledDate (we might need to keep this from calculation)
+                     null, item.isCompleted(), null, ""
+             );
+             dbHelper.addVaccineSchedule(newSchedule, task -> {
+                 if(task.isSuccessful()) {
+                      // refresh or add to existing list
+                      // ID is already set by helper synchronously
+                      existingSchedules.add(newSchedule);
+                 }
+             });
+        }
+
     }
 
     private Calendar getVaccineCalendar(Calendar birthDate, int bulanDitambah) {
@@ -252,7 +352,7 @@ public class ImunisasiActivity extends AppCompatActivity {
                     {"Campak / MR", 9}
             };
 
-            Toast.makeText(this, "Menghitung & menyimpan jadwal...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Menghitung jadwal...", Toast.LENGTH_SHORT).show();
 
             for (Object[] item : masterJadwal) {
                 String namaVaksin = (String) item[0];
@@ -262,20 +362,31 @@ public class ImunisasiActivity extends AppCompatActivity {
                 String tglUI = uiFormat.format(targetCal.getTime());
                 String tglDB = dbFormat.format(targetCal.getTime());
 
-                jadwalItems.add(new JadwalItem(namaVaksin, tglUI, jarakBulan));
+                JadwalItem jadwalItem = new JadwalItem(namaVaksin, tglUI, jarakBulan);
+                
+                // Check if completed in DB
+                boolean isCompleted = false;
+                boolean existsInDb = false;
+                
+                for (VaccineSchedule s : existingSchedules) {
+                    if (s.vaccineName.equals(namaVaksin)) {
+                        isCompleted = s.isCompleted;
+                        existsInDb = true;
+                        break;
+                    }
+                }
+                
+                jadwalItem.setCompleted(isCompleted);
+                jadwalItems.add(jadwalItem);
 
-                if (currentUser != null) {
-                    // Placeholder: Because we removed the Child Spinner from the layout,
-                    // we cannot determine which child this schedule belongs to.
-                    // For now, it just calculates visually.
-                    String childId = "child_id_placeholder";
-
-                    VaccineSchedule schedule = new VaccineSchedule(
-                            null, userId, childId, namaVaksin, tglDB, tglDB, false, null, "Otomatis dari Kalkulator"
+                // If it doesn't exist in DB, create the initial record so we have a place to store status later
+                if (!existsInDb && currentUser != null && selectedChildId != null) {
+                     VaccineSchedule schedule = new VaccineSchedule(
+                            null, userId, selectedChildId, namaVaksin, tglDB, tglDB, false, null, "Otomatis"
                     );
                     dbHelper.addVaccineSchedule(schedule, task -> {
                         if (task.isSuccessful()) {
-                            Log.d("JADWAL", "Tersimpan: " + namaVaksin);
+                             existingSchedules.add(schedule); // Add to local cache
                         }
                     });
                 }

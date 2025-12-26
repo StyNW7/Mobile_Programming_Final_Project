@@ -42,13 +42,7 @@
                 android:textColor="@color/colorPrimaryVariant"
                 android:layout_marginBottom="6dp"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="👶 Budi Santoso • 1 Tahun"
-                android:textSize="16sp"
-                android:textColor="@color/colorTextPrimary"
-                android:layout_marginBottom="20dp"/>
+
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -64,6 +58,28 @@
                     android:padding="16dp"
                     android:orientation="vertical">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pilih Anak"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimaryVariant"
+                        android:layout_marginBottom="6dp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/bg_input_field"
+                        android:layout_marginBottom="16dp">
+
+                        <Spinner
+                            android:id="@+id/spinner_anak_riwayat"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"/>
+                    </RelativeLayout>
                     <EditText
                         android:id="@+id/et_berat_badan"
                         android:layout_width="match_parent"
@@ -126,6 +142,14 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:layout_margin="20dp"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_riwayat"

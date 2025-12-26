@@ -2,16 +2,19 @@ package id.example.sehatin.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,16 +24,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import id.example.sehatin.R;
 import id.example.sehatin.databinding.ActivityRiwayatBinding;
@@ -39,13 +44,20 @@ import id.example.sehatin.utils.SessionManager;
 public class RiwayatActivity extends AppCompatActivity {
 
     private ActivityRiwayatBinding binding;
-    private static final String PREFS_NAME = "sehatin_prefs";
-    private static final String KEY_RIWAYAT = "riwayat_list";
     private SessionManager sessionManager;
+    
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+
+    // Spinner Data
+    private Spinner spinnerAnak;
+    private final List<String[]> childList = new ArrayList<>();
+    private final List<String> childNames = new ArrayList<>();
+    private String selectedChildId = null;
 
     // RecyclerView components
     private RiwayatAdapter adapter;
-    private List<RiwayatModel> historyList = new ArrayList<>();
+    private final List<RiwayatModel> historyList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +67,17 @@ public class RiwayatActivity extends AppCompatActivity {
 
         sessionManager = new SessionManager(this);
 
+        // Init Firebase
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         setupTopBar();
         setupBottomNavigation();
         setupRecyclerView();
 
-        // Load data on startup
-        loadHistoryData();
+        // Setup Spinner
+        spinnerAnak = findViewById(R.id.spinner_anak_riwayat);
+        loadChildrenForSpinner();
 
         // tombol simpan
         binding.btnSimpanRiwayat.setOnClickListener(v -> onSaveClicked());
@@ -68,7 +85,7 @@ public class RiwayatActivity extends AppCompatActivity {
 
     private void setupTopBar() {
         TextView tvTitle = findViewById(R.id.tvToolbarTitle);
-        if (tvTitle != null) tvTitle.setText("Riwayat Kesehatan");
+        if (tvTitle != null) tvTitle.setText(R.string.title_riwayat_kesehatan);
 
         ImageView btnSignOut = findViewById(R.id.btnSignOut);
         if (btnSignOut != null) {
@@ -120,35 +137,116 @@ public class RiwayatActivity extends AppCompatActivity {
         binding.rvRiwayat.setAdapter(adapter);
     }
 
-    private void loadHistoryData() {
-        historyList.clear();
-        JSONArray jsonArray = loadHistoryFromPrefs();
+    private void loadChildrenForSpinner() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        String userId = (currentUser != null) ? currentUser.getUid() : "";
+        if (userId.isEmpty()) return;
 
-        // Convert JSON Array to List of Objects
-        if (jsonArray.length() > 0) {
-            for (int i = 0; i < jsonArray.length(); i++) {
-                try {
-                    JSONObject obj = jsonArray.getJSONObject(i);
-                    RiwayatModel item = new RiwayatModel(
-                            obj.optString("tanggal"),
-                            obj.optDouble("bb"),
-                            obj.optDouble("tb"),
-                            obj.optString("catatan")
-                    );
-                    historyList.add(item);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            // Reverse to show newest first
-            Collections.reverse(historyList);
-        }
+        db.collection("children").whereEqualTo("userId", userId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        childList.clear();
+                        childNames.clear();
+                        childNames.add("-- Pilih Anak --");
 
-        updateEmptyState();
-        adapter.notifyDataSetChanged();
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
+                            String id = doc.getId();
+                            String name = doc.getString("name");
+                            childList.add(new String[]{id, name});
+                            childNames.add(name);
+                        }
+
+                        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, childNames);
+                        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinnerAnak.setAdapter(spinnerAdapter);
+
+                        spinnerAnak.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                // Clear inputs when switching child
+                                binding.etBeratBadan.setText("");
+                                binding.etTinggiBadan.setText("");
+                                binding.etCatatan.setText("");
+
+                                // Immediate Clear UI for feedback
+                                historyList.clear();
+                                // Data set is small, full refresh is acceptable
+                                //noinspection NotifyDataSetChanged
+                                adapter.notifyDataSetChanged();
+                                binding.rvRiwayat.setVisibility(View.GONE);
+                                binding.cvEmptyState.setVisibility(View.GONE);
+
+                                if (position > 0) {
+                                    selectedChildId = childList.get(position - 1)[0];
+                                    binding.progressBar.setVisibility(View.VISIBLE); // Show loader
+                                    loadHistoryData(selectedChildId);
+                                } else {
+                                    selectedChildId = null;
+                                    binding.progressBar.setVisibility(View.GONE);
+                                    updateEmptyState();
+                                }
+                            }
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {}
+                        });
+                    }
+                });
+    }
+
+    private void loadHistoryData(String childId) {
+        if (childId == null) return;
+        
+        // Remove .orderBy to avoid needing a Composite Index (which causes failure if missing)
+        db.collection("child_growth_records")
+                .whereEqualTo("childId", childId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    binding.progressBar.setVisibility(View.GONE); // Hide loader
+                    if (task.isSuccessful()) {
+                        historyList.clear();
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
+                            Date createdAt = doc.getDate("createdAt");
+                            if (createdAt == null) createdAt = new Date();
+
+                            // Safe unboxing
+                            Double wVal = doc.getDouble("weight");
+                            double weight = (wVal != null) ? wVal : 0.0;
+
+                            Double hVal = doc.getDouble("height");
+                            double height = (hVal != null) ? hVal : 0.0;
+
+                            RiwayatModel item = new RiwayatModel(
+                                    doc.getString("dateString"),
+                                    weight,
+                                    height,
+                                    doc.getString("notes"),
+                                    createdAt
+                            );
+                            historyList.add(item);
+                        }
+                        
+                        // Sort client-side (Descending)
+                        historyList.sort((o1, o2) -> o2.realDate.compareTo(o1.realDate));
+
+                        // small list
+                        //noinspection NotifyDataSetChanged
+                        adapter.notifyDataSetChanged();
+                        updateEmptyState();
+                    } else {
+                        Log.e("Riwayat", "Error loading history", task.getException());
+                        Toast.makeText(RiwayatActivity.this, "Gagal memuat riwayat", Toast.LENGTH_SHORT).show();
+                        updateEmptyState();
+                    }
+                });
     }
 
     private void onSaveClicked() {
+        if (selectedChildId == null) {
+            Toast.makeText(this, "Silakan pilih anak terlebih dahulu.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String bbStr = binding.etBeratBadan.getText().toString().trim();
         String tbStr = binding.etTinggiBadan.getText().toString().trim();
         String catatan = binding.etCatatan.getText().toString().trim();
@@ -168,25 +266,38 @@ public class RiwayatActivity extends AppCompatActivity {
         }
 
         String timestamp = currentTimestamp();
+        
+        // Save to Firestore
+        Map<String, Object> record = new HashMap<>();
+        record.put("childId", selectedChildId);
+        record.put("dateString", timestamp);
+        record.put("weight", bb);
+        record.put("height", tb);
+        record.put("notes", catatan);
+        Date now = new Date();
+        record.put("createdAt", now); // For sorting
 
-        // 1. Create Model object for UI
-        RiwayatModel newItem = new RiwayatModel(timestamp, bb, tb, catatan);
+        db.collection("child_growth_records")
+                .add(record)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                         // Update UI
+                        RiwayatModel newItem = new RiwayatModel(timestamp, bb, tb, catatan, now);
+                        historyList.add(0, newItem);
+                        adapter.notifyItemInserted(0);
+                        binding.rvRiwayat.smoothScrollToPosition(0);
+                        updateEmptyState();
 
-        // 2. Add to UI List (Top)
-        historyList.add(0, newItem);
-        adapter.notifyItemInserted(0);
-        binding.rvRiwayat.smoothScrollToPosition(0);
-        updateEmptyState();
+                        // Reset Input
+                        binding.etBeratBadan.setText("");
+                        binding.etTinggiBadan.setText("");
+                        binding.etCatatan.setText("");
 
-        // 3. Save to SharedPreferences (JSON)
-        saveToPrefs(newItem);
-
-        // 4. Reset Input
-        binding.etBeratBadan.setText("");
-        binding.etTinggiBadan.setText("");
-        binding.etCatatan.setText("");
-
-        Toast.makeText(this, "Riwayat tersimpan.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Riwayat tersimpan.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Gagal menyimpan riwayat.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void updateEmptyState() {
@@ -199,37 +310,7 @@ public class RiwayatActivity extends AppCompatActivity {
         }
     }
 
-    // --- SHARED PREFERENCES HELPER METHODS ---
-
-    private JSONArray loadHistoryFromPrefs() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String raw = prefs.getString(KEY_RIWAYAT, null);
-        try {
-            return raw != null ? new JSONArray(raw) : new JSONArray();
-        } catch (JSONException e) {
-            return new JSONArray();
-        }
-    }
-
-    private void saveToPrefs(RiwayatModel item) {
-        // We load existing, add new, then save back
-        JSONArray arr = loadHistoryFromPrefs();
-        JSONObject json = new JSONObject();
-        try {
-            json.put("tanggal", item.tanggal);
-            json.put("bb", item.bb);
-            json.put("tb", item.tb);
-            json.put("catatan", item.catatan);
-
-            arr.put(json); // Add to end of JSON array
-
-            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-            prefs.edit().putString(KEY_RIWAYAT, arr.toString()).apply();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+    // --- SHARED PREFERENCES HELPER METHODS REMOVED ---
 
     private String currentTimestamp() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
@@ -244,18 +325,20 @@ public class RiwayatActivity extends AppCompatActivity {
         double bb;
         double tb;
         String catatan;
+        Date realDate;
 
-        public RiwayatModel(String tanggal, double bb, double tb, String catatan) {
+        public RiwayatModel(String tanggal, double bb, double tb, String catatan, Date realDate) {
             this.tanggal = tanggal;
             this.bb = bb;
             this.tb = tb;
             this.catatan = catatan;
+            this.realDate = realDate;
         }
     }
 
     // 2. RecyclerView Adapter
-    public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.ViewHolder> {
-        private List<RiwayatModel> list;
+    public static class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.ViewHolder> {
+        private final List<RiwayatModel> list;
 
         public RiwayatAdapter(List<RiwayatModel> list) {
             this.list = list;
@@ -272,12 +355,12 @@ public class RiwayatActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             RiwayatModel item = list.get(position);
             holder.tvDate.setText(item.tanggal);
-            holder.tvBb.setText(item.bb + " kg");
-            holder.tvTb.setText(item.tb + " cm");
+            holder.tvBb.setText(String.format(Locale.getDefault(), "%.1f kg", item.bb));
+            holder.tvTb.setText(String.format(Locale.getDefault(), "%.1f cm", item.tb));
 
             if (item.catatan != null && !item.catatan.isEmpty()) {
                 holder.tvNotes.setVisibility(View.VISIBLE);
-                holder.tvNotes.setText("Catatan: " + item.catatan);
+                holder.tvNotes.setText(String.format("Catatan: %s", item.catatan));
             } else {
                 holder.tvNotes.setVisibility(View.GONE);
             }
@@ -288,7 +371,7 @@ public class RiwayatActivity extends AppCompatActivity {
             return list.size();
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        public static class ViewHolder extends RecyclerView.ViewHolder {
             TextView tvDate, tvBb, tvTb, tvNotes;
 
             public ViewHolder(@NonNull View itemView) {
