@@ -1,5 +1,6 @@
 package id.example.sehatin.activities;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ import id.example.sehatin.chatbot.ChatMessage;
 import id.example.sehatin.chatbot.ChatService;
 import id.example.sehatin.chatbot.GroqRequest; // NEW
 import id.example.sehatin.chatbot.GroqResponse; // NEW
+import id.example.sehatin.firebase.DatabaseHelper;
 import id.example.sehatin.utils.SessionManager;
 import io.noties.markwon.Markwon;
 import retrofit2.Call;
@@ -45,14 +48,15 @@ public class ChatbotActivity extends AppCompatActivity {
     private ImageButton btnSend;
     private ChatAdapter adapter;
     private List<ChatMessage> messageList;
+    private DatabaseHelper dbHelper;
     private ChatService chatService;
     private SessionManager sessionManager;
-
+    String finalDoctorContext = "Data dokter lagi tidak tersedia.";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatbot);
-
+        dbHelper = new DatabaseHelper();
         sessionManager = new SessionManager(this);
         setupViews();
         setupNavigation();
@@ -92,7 +96,6 @@ public class ChatbotActivity extends AppCompatActivity {
                 .build();
         chatService = retrofit.create(ChatService.class);
     }
-
     private void sendMessage() {
         String query = etMessage.getText().toString().trim();
         if (query.isEmpty()) return;
@@ -103,46 +106,89 @@ public class ChatbotActivity extends AppCompatActivity {
         rvChat.smoothScrollToPosition(messageList.size() - 1);
         etMessage.setText("");
 
-        // 2. Call Groq API
-        GroqRequest request = new GroqRequest(query);
+        // 2. Fetch doctor context FIRST
+        dbHelper.getDoctors(task -> {
+            String doctorContext;
 
+            if (task.isSuccessful() && task.getResult() != null) {
+                StringBuilder contextBuilder = new StringBuilder();
+
+                for (DocumentSnapshot document : task.getResult().getDocuments()) {
+                    try {
+                        String doctorName = document.getString("name");
+                        String doctorSpecialty = document.getString("specialty");
+                        Boolean isAvailable = document.getBoolean("isAvailable");
+                        String doctorAvailability = (isAvailable != null && isAvailable)
+                                ? "Tersedia" : "Tidak tersedia";
+
+                        contextBuilder.append("- ")
+                                .append(doctorName != null ? doctorName : "Unknown")
+                                .append(" (")
+                                .append(doctorSpecialty != null ? doctorSpecialty : "General")
+                                .append(") - ")
+                                .append(doctorAvailability)
+                                .append("\n");
+                    } catch (Exception e) {
+                        android.util.Log.e("DOCTOR_PARSE", "Error parsing doctor: " + e.getMessage());
+                    }
+                }
+
+                doctorContext = contextBuilder.length() > 0
+                        ? contextBuilder.toString()
+                        : "Tidak ada data dokter tersedia.";
+            } else {
+                doctorContext = "Data dokter saat ini tidak tersedia.";
+                android.util.Log.e("FIRESTORE", "Error fetching doctors: " + task.getException());
+            }
+
+            // 3. Create request with context
+            GroqRequest request = new GroqRequest(query, doctorContext);
+            performApiCall(request);
+        });
+    }
+
+    private void performApiCall(GroqRequest request) {
         chatService.getChatResponse(GROQ_API_KEY, request).enqueue(new Callback<GroqResponse>() {
             @Override
             public void onResponse(Call<GroqResponse> call, Response<GroqResponse> response) {
-                if (response.isSuccessful() && response.body() != null && !response.body().choices.isEmpty()) {
-                    try {
-                        String botReply = response.body().choices.get(0).message.content;
-                        addBotMessage(botReply);
-                    } catch (Exception e) {
-                        addBotMessage("Format jawaban aneh.");
-                    }
-                } else {
-                    // === CRITICAL FIX: READ THE ERROR MESSAGE ===
-                    try {
-                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown Error";
-                        android.util.Log.e("GROQ_ERROR", "Error: " + errorBody); // Check Logcat for this!
-
-                        // Show a specific hint to the user
-                        if (response.code() == 401) {
-                            addBotMessage("Error 401: API Key salah. Cek 'Bearer' dan spasi.");
-                        } else if (response.code() == 400) {
-                            addBotMessage("Error 400: Format Request Salah. Cek Logcat.");
-                        } else {
-                            addBotMessage("Gagal (" + response.code() + "): " + errorBody);
+                runOnUiThread(() -> {  // ✅ CRITICAL: Run on UI thread
+                    if (response.isSuccessful() && response.body() != null && !response.body().choices.isEmpty()) {
+                        try {
+                            String botReply = response.body().choices.get(0).message.content;
+                            addBotMessage(botReply);
+                        } catch (Exception e) {
+                            addBotMessage("Format jawaban aneh.");
+                            android.util.Log.e("GROQ_PARSE", "Parse error: " + e.getMessage());
                         }
-                    } catch (Exception e) {
-                        addBotMessage("Gagal terhubung: " + response.code());
+                    } else {
+                        try {
+                            String errorBody = response.errorBody() != null
+                                    ? response.errorBody().string() : "Unknown Error";
+                            android.util.Log.e("GROQ_ERROR", "Error: " + errorBody);
+
+                            if (response.code() == 401) {
+                                addBotMessage("Error 401: API Key salah.");
+                            } else if (response.code() == 400) {
+                                addBotMessage("Error 400: Format Request Salah.");
+                            } else {
+                                addBotMessage("Gagal: " + response.code());
+                            }
+                        } catch (Exception e) {
+                            addBotMessage("Gagal terhubung: " + response.code());
+                        }
                     }
-                }
+                });
             }
 
             @Override
             public void onFailure(Call<GroqResponse> call, Throwable t) {
-                addBotMessage("Gagal koneksi internet: " + t.getMessage());
+                runOnUiThread(() -> {  // ✅ CRITICAL: Run on UI thread
+                    addBotMessage("Gagal koneksi: " + t.getMessage());
+                    android.util.Log.e("GROQ_FAILURE", "Network error: " + t.getMessage());
+                });
             }
         });
     }
-
     private void addBotMessage(String message) {
         messageList.add(new ChatMessage(message, false));
         adapter.notifyItemInserted(messageList.size() - 1);

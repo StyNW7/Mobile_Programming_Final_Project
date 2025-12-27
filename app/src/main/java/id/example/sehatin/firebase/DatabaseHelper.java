@@ -29,7 +29,7 @@ public class DatabaseHelper {
     private static final String COLL_HEALTH_RECORDS = "childHealthRecords";
     private static final String COLL_EMERGENCY = "emergencyContacts";
     private static final String COLL_ARTICLES = "healthArticles";
-
+    private static final String COLL_DOCTORS = "doctors";
     // --------------------------------------------------
     // CREATE / INSERT
     // --------------------------------------------------
@@ -95,6 +95,12 @@ public class DatabaseHelper {
     public void getUser(String userId, OnCompleteListener<DocumentSnapshot> onComplete) {
         db.collection(COLL_USERS)
                 .document(userId)
+                .get()
+                .addOnCompleteListener(onComplete);
+    }
+
+    public void getDoctors(OnCompleteListener<QuerySnapshot> onComplete) {
+        db.collection(COLL_DOCTORS)
                 .get()
                 .addOnCompleteListener(onComplete);
     }

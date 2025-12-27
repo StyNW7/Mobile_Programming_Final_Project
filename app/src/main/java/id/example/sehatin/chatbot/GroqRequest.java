@@ -6,17 +6,18 @@ import java.util.List;
 
 public class GroqRequest {
 
-    // FIX: Use the 8b model (Standard & Most Stable)
     @SerializedName("model")
     public String model = "llama-3.1-8b-instant";
 
     @SerializedName("messages")
     public List<Message> messages;
 
-    public GroqRequest(String userPrompt) {
+    public GroqRequest(String userPrompt, String doctorContext) {
         this.messages = new ArrayList<>();
-        // System Prompt
-        this.messages.add(new Message("system", "Anda adalah asisten kesehatan Sehatin. Jawablah singkat, ramah, dan dalam Bahasa Indonesia."));
+        // System Prompt with doctor context
+        this.messages.add(new Message("system",
+                "Anda adalah asisten kesehatan Sehatin. Jawablah singkat, ramah, dan dalam Bahasa Indonesia. " +
+                        "Jika ditanya dokter apa saja yang tersedia, jawab dengan data berikut:\n" + doctorContext));
         // User Prompt
         this.messages.add(new Message("user", userPrompt));
     }
